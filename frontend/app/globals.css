@@ -15,6 +15,7 @@
   --color-accent: #00FF85;
   --color-accent-2: #1E90FF;
   --color-hover: #FF0099;
+  --color-card: #1E1E1E;
 }
 
 @media (prefers-color-scheme: dark) {

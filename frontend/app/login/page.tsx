@@ -34,17 +34,17 @@ export default function LoginPage() {
             router.push("/dashboard");
             return;
         } catch (err: any) {
-        setError(err.message || "Login failed");
+            setError(err.message || "Login failed");
         } finally {
-        setIsLoading(false);
+            setIsLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="min-h-screen flex items-center justify-center">
             <div className="max-w-md w-full space-y-8">
                 <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    <h2 className="mt-6 text-center text-3xl font-extrabold">
                         Login to your account
                     </h2>
                 </div>
@@ -56,7 +56,7 @@ export default function LoginPage() {
                                 name="email"
                                 type="email"
                                 required
-                                className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                 placeholder="Email address"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -68,13 +68,15 @@ export default function LoginPage() {
                                 name="password"
                                 type="password"
                                 required
-                                className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                 placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
                     </div>
+
+                    {error && <p className="mt-2 text-center text-sm text-red-600">{error}</p>}
 
                     <div>
                         <button
@@ -92,11 +94,11 @@ export default function LoginPage() {
                                 </span>
                             ) : 'Sign in'}
                         </button>
-                        <div className="text-center">
-                            <a href="/signup" className="text-indigo-600 hover:text-indigo-500">
-                                Don't have an account? Sign up
-                            </a>
-                        </div>
+                    </div>
+                    <div className="text-center">
+                        <a href="/signup" className="text-indigo-600 hover:text-indigo-500">
+                            Don't have an account? Sign up
+                        </a>
                     </div>
                 </form>
             </div>

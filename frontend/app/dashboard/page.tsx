@@ -21,12 +21,23 @@ export default function DashboardPage() {
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
       <p>Welcome to your dashboard! Here you can manage your job applications and contacts.</p>
       <div className="mt-6">
-        <h2 className="text-xl font-semibold mb-2">Your Stats</h2>
-        <ul className="list-disc list-inside">
-          <li>Applications Submitted: 5</li>
-          <li>Interviews Scheduled: 2</li>
-          <li>Offers Received: 1</li>
-        </ul>
+        <h1>Statistic Overview</h1>
+        <p>Summary of your job applications will be displayed here.</p>
+      </div>
+      <div className="mt-6">
+        <h1>Recent Job Applications</h1>
+        <p>Your most recent job applications will be displayed here.</p>
+      </div>
+      <div className="mt-6">
+        <h1>Recent Contacts</h1>
+        <p>Your most recent contacts will be displayed here.</p>
+      </div>
+      <div className="mt-6">
+        <h1>Here are some great resources to help you get started:</h1>
+        <a href="#" className="text-blue-500 hover:underline">Resource 1</a>
+        <a href="#" className="text-blue-500 hover:underline">Resource 2</a>
+        <a href="#" className="text-blue-500 hover:underline">Resource 3</a>
+        <a href="#" className="text-blue-500 hover:underline">Join the Discord!</a>
       </div>
     </div>
   );
