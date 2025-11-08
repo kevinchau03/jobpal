@@ -39,7 +39,7 @@ export default function AddContactForm({ onCreated }: Props) {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="bg-gray-800 space-y-3 rounded-xl p-4">
+        <form onSubmit={handleSubmit} className="bg-card space-y-3 rounded-sm p-4 border border-border">
             <div className="flex flex-col gap-2">
                 <input
                     className="border rounded px-3 py-2"
@@ -87,7 +87,7 @@ export default function AddContactForm({ onCreated }: Props) {
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <button
                 type="submit"
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                 disabled={loading}
             >
                 {loading ? <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

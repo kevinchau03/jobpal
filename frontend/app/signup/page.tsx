@@ -125,7 +125,7 @@ export default function SignUpPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                         >
                             {isLoading ? <span className="flex items-center">
                                     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -138,7 +138,7 @@ export default function SignUpPage() {
                     </div>
 
                     <div className="text-center">
-                        <Link href="/login" className="text-indigo-600 hover:text-indigo-500">
+                        <Link href="/login" className="text-secondary hover:text-secondary">
                             Already have an account? Sign in
                         </Link>
                     </div>

@@ -51,7 +51,7 @@ export default function JobsPage() {
     return (
       <div className="p-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Job Applications</h1>
+          <h1 className="text-3xl font-bold text-secondary">Job Applications</h1>
           <p className="mt-2 text-gray-500">Loading…</p>
         </div>
         <div className="space-y-3">
@@ -76,7 +76,7 @@ export default function JobsPage() {
   return (
     <div className="p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Job Applications</h1>
+        <h1 className="text-3xl font-bold text-secondary">Job Applications</h1>
         <p className="mt-2 text-gray-600">
           {jobs.length} {jobs.length === 1 ? "application" : "applications"}
         </p>
@@ -88,7 +88,7 @@ export default function JobsPage() {
       </div>
 
       {jobs.length === 0 ? (
-        <div className="bg-gray-800 rounded-lg shadow-sm p-12 text-center">
+        <div className="bg-card border border-border rounded-lg shadow-sm p-12 text-center">
           <Briefcase className="w-12 h-12 mx-auto mb-4 text-gray-400" />
           <p className="text-gray-600">No jobs found.</p>
         </div>
@@ -101,7 +101,7 @@ export default function JobsPage() {
             return (
               <div
                 key={job.id}
-                className="bg-gray-800 rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
+                className="bg-card border border-border rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">

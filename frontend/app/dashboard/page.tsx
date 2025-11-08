@@ -76,7 +76,7 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-secondary">Dashboard</h1>
           <p className=" mt-1">Track your job search progress</p>
         </div>
 
@@ -93,7 +93,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Recent Jobs</h2>
               <Link
-                className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                className="text-sm font-medium text-primary hover:text-blue-700 transition-colors"
                 href="/dashboard/jobs"
               >
                 View all →
@@ -105,7 +105,7 @@ export default function DashboardPage() {
                 <Empty text="No jobs yet. Add your first application." />
               ) : (
                 <ul className="divide-y divide-gray-100">
-                  {jobs.slice(0, 4).map((j) => (
+                  {jobs.slice(0, 3).map((j) => (
                     <li key={j.id} className="py-4 first:pt-0 last:pb-0">
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0 flex-1">
@@ -124,7 +124,7 @@ export default function DashboardPage() {
 
             {jobs.length === 0 && (
               <Link
-                className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-primary bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
                 href="/dashboard/jobs"
               >
                 Add your first job →
@@ -137,7 +137,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Recent Contacts</h2>
               <Link
-                className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                className="text-sm font-medium text-primary hover:text-blue-700 transition-colors"
                 href="/dashboard/contacts"
               >
                 View all →
@@ -149,7 +149,7 @@ export default function DashboardPage() {
                 <Empty text="No contacts yet. Add a recruiter or hiring manager." />
               ) : (
                 <ul className="divide-y divide-gray-100">
-                  {safeContacts.slice(0, 4).map((c) => (
+                  {safeContacts.slice(0, 3).map((c) => (
                     <li key={c.id} className="py-4 first:pt-0 last:pb-0">
                       <div className="font-semibold">{c.name}</div>
                       <div className="text-sm  mt-1">
@@ -169,7 +169,7 @@ export default function DashboardPage() {
 
             {safeContacts.length === 0 && (
               <Link
-                className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-primary bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
                 href="/dashboard/contacts"
               >
                 Add your first contact →
@@ -185,7 +185,7 @@ export default function DashboardPage() {
 /* tiny presentational bits to keep the page tidy */
 function KPI({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-sm p-2 shadow-sm bg-gray-800">
+    <div className="rounded-sm p-2 shadow-sm bg-card border border-border">
       <p className="text-sm ">{label}</p>
       <p className="mt-2 text-3xl font-semibold ">{value}</p>
     </div>
@@ -194,7 +194,7 @@ function KPI({ label, value }: { label: string; value: number }) {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-sm shadow-sm bg-gray-800">
+    <div className="rounded-sm shadow-sm bg-card border border-border">
       <div className="px-2 py-2 border-b">
         <h2 className="text-lg font-semibold ">{title}</h2>
       </div>

@@ -45,26 +45,28 @@ export default function ContactsPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Contacts</h1>
+      <h1 className="text-2xl font-bold mb-4 text-secondary">Contacts</h1>
       <p>Manage your contacts here.</p>
       <AddContactForm onCreated={loadContacts} />
       <div className="mt-6 space-y-4">
         {contacts.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-            <p className="text-gray-600">No contacts found.</p>
+          <div className="bg-card rounded-sm shadow-sm border border-border p-12 text-center">
+            <p className="">No contacts found.</p>
           </div>
         ) : (
           <div className="space-y-4">
             {contacts.map(contact => (
               <div
                 key={contact.id}
-                className="bg-white rounded-sm shadow-sm p-2 border border-gray-200 hover:shadow-md transition-shadow"
+                className="bg-card rounded-sm shadow-sm p-2 border border-border hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <p className="text-lg font-medium text-gray-900">{contact.name}</p>
-                    {contact.email && <p className="text-sm text-gray-600">Email: {contact.email}</p>}
-                    {contact.phone && <p className="text-sm text-gray-600">Phone: {contact.phone}</p>}
+                    <p className="text-lg font-medium">{contact.name}</p>
+                    {contact.email && <p className="text-sm ">Email: {contact.email}</p>}
+                    {contact.phone && <p className="text-sm ">Phone: {contact.phone}</p>}
+                    {contact.company && <p className="text-sm ">Company: {contact.company}</p>}
+                    {contact.linkedin && <p className="text-sm ">LinkedIn: {contact.linkedin}</p>}
                   </div>
                 </div>
               </div>

@@ -82,7 +82,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                         >
                             {isLoading ? (
                                 <span className="flex items-center">
@@ -96,7 +96,7 @@ export default function LoginPage() {
                         </button>
                     </div>
                     <div className="text-center">
-                        <a href="/signup" className="text-indigo-600 hover:text-indigo-500">
+                        <a href="/signup" className="text-secondary hover:text-secondary">
                             Don't have an account? Sign up
                         </a>
                     </div>

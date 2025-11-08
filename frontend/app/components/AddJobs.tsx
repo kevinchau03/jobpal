@@ -33,7 +33,7 @@ export default function AddJobForm({ onCreated }: Props) {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="bg-gray-800 space-y-3 rounded-xl p-4">
+        <form onSubmit={handleSubmit} className="bg-card space-y-3 rounded-sm p-4 border border-border">
             <div className="flex gap-2">
                 <input
                     className="flex-1 border rounded px-3 py-2"
@@ -66,7 +66,7 @@ export default function AddJobForm({ onCreated }: Props) {
             <button
                 type="submit"
                 disabled={busy}
-                className="rounded-lg px-4 py-2 border font-medium disabled:opacity-60"
+                className="rounded-sm bg-primary px-4 py-2 font-medium disabled:opacity-60"
             >
                 {busy ? <span className="flex items-center">
                     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
