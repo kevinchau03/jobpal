@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Briefcase, Building2, Calendar, Edit2, X } from "lucide-react";
+import { Briefcase, Building2, Calendar, Edit2, X, Plus } from "lucide-react";
 import { api } from "@/lib/api";
-import AddJobs from "../../components/AddJobs";
+import AddJobModal from "../../components/AddJobs";
 
 type Job = {
   id: string;
@@ -26,6 +26,9 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
+
+  // Add modal state
+  const [showAddModal, setShowAddModal] = useState(false);
 
   // Edit modal state
   const [editingJob, setEditingJob] = useState<Job | null>(null);
@@ -151,9 +154,32 @@ export default function JobsPage() {
         </p>
       </div>
 
-      {/* Add Job (refresh after create) */}
-      <div className="mb-6">
-        <AddJobs onCreated={loadJobs} />
+      {/* Add Job Button */}
+      <div className="mb-6 flex justify-between items-center">
+        <div className="flex items-center">
+          <div className="rounded-xl bg-red-400 px-4 py-2 mr-4">
+            <span>{jobs.filter(job => job.status === "SAVED").length} Saved Jobs</span>
+          </div>
+          <div className="rounded-xl bg-yellow-400 px-4 py-2 mr-4">
+            <span>{jobs.filter(job => job.status === "REJECTED").length} Rejected Jobs</span>
+          </div>
+          <div className="rounded-xl bg-green-400 px-4 py-2">
+            <span>{jobs.filter(job => job.status === "APPLIED").length} Applied Jobs</span>
+          </div>
+          <div className="rounded-xl bg-blue-400 px-4 py-2 ml-4">
+            <span>{jobs.filter(job => job.status === "INTERVIEWING").length} Interviewing Jobs</span>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <input type="text" placeholder="Paste in job link" className="px-4 py-2 border border-gray-300 rounded-lg mr-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-secondary text-white rounded-lg hover:cursor-pointer transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add New Job
+          </button>
+        </div>
       </div>
 
       {jobs.length === 0 ? (
@@ -321,6 +347,13 @@ export default function JobsPage() {
           </div>
         </div>
       )}
+
+      {/* Add Job Modal */}
+      <AddJobModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onCreated={loadJobs}
+      />
     </div>
   );
 }

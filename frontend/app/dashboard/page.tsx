@@ -77,7 +77,7 @@ export default function DashboardPage() {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-secondary">Dashboard</h1>
-          <p className=" mt-1">Track your job search progress</p>
+          <p className=" mt-1">"Just got to keep on pushing!"</p>
         </div>
 
         {/* KPI cards */}

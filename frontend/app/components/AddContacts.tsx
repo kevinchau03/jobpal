@@ -229,7 +229,7 @@ export default function AddContactForm({ onCreated }: Props) {
             
             <button
                 type="submit"
-                className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 hover:cursor-pointer"
+                className="w-full px-4 py-2 bg-primary text-black rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 hover:cursor-pointer"
                 disabled={loading}
             >
                 {loading ? (
