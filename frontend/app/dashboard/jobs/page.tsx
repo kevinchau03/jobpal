@@ -111,8 +111,10 @@ export default function JobsPage() {
   };
 
   const closeEditModal = () => {
-    setEditingJob(null);
-    setEditError(null);
+    setTimeout(() => {
+      setEditingJob(null);
+      setEditError(null);
+    }, 150); // 150ms for exit animation
   };
 
   useEffect(() => {
@@ -230,13 +232,13 @@ export default function JobsPage() {
                       {job.status}
                     </span>
                     <button
-                      className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-md transition-colors"
+                      className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-md transition-colors hover:cursor-pointer"
                       onClick={() => handleEditJob(job)}
                     >
                       Edit
                     </button>
                     <button
-                      className="text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-md transition-colors"
+                      className="text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-md transition-colors hover:cursor-pointer"
                       onClick={() => handleDeleteJob(job.id)}
                     >
                       Delete
@@ -251,8 +253,15 @@ export default function JobsPage() {
 
       {/* Edit Modal */}
       {editingJob && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-card rounded-lg p-6 w-full max-w-md mx-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={closeEditModal}
+          />
+
+          {/* Modal Content */}
+          <div className="relative bg-card rounded-lg p-6 w-full max-w-md mx-4 shadow-xl border border-border">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-primary">Edit Job</h3>
               <button
