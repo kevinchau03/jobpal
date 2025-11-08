@@ -1,10 +1,16 @@
-import { cookies } from "next/headers";
+"use client"
+import { useEffect, useState, useCallback } from "react";
+import { api } from "@/lib/api";
+import AddContactForm from "../../components/AddContacts";
 
 type Contact = {
   id: string;
   name: string;
   email?: string | null;
   phone?: string | null;
+  linkedin?: string | null;
+  company: string;
+  status: string;
   createdAt: string;
 }
 
@@ -12,30 +18,36 @@ const statusColors = {
   default: "bg-gray-100 text-gray-700"
 };
 
-export default async function ContactsPage() {
-  const cookieStore = await cookies();
-  const cookieHeader = cookieStore.getAll().map(cookie => `${cookie.name}=${cookie.value}`).join('; ');
+export default function ContactsPage() {
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string | null>(null);
 
-  const res = await fetch("http://localhost:4000/api/contacts?limit=20", {
-    headers: { cookie: cookieHeader },
-    cache: "no-store", 
-  });
-  
-  if (!res.ok) {
-    return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Contacts</h1>
-        <p>Manage your contacts here.</p>
-      </div>
-    );
-  }
+  const loadContacts = useCallback(async () => {
+    setLoading(true);
+    setErr(null);
+    try {
+      const { items } = await api<{ items: Contact[]; nextCursor: string | null }>(
+        "/api/contacts?limit=20"
+      );
+      setContacts(items);
+    } catch (e: any) {
+      setErr(e.message || "Failed to load contacts");
+      setContacts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const { items: contacts } = (await res.json()) as { items: Contact[]; nextCursor: string | null };
+  useEffect(() => {
+    loadContacts();
+  }, [loadContacts]);
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Contacts</h1>
       <p>Manage your contacts here.</p>
+      <AddContactForm onCreated={loadContacts} />
       <div className="mt-6 space-y-4">
         {contacts.length === 0 ? (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
@@ -44,8 +56,8 @@ export default async function ContactsPage() {
         ) : (
           <div className="space-y-4">
             {contacts.map(contact => (
-              <div 
-                key={contact.id} 
+              <div
+                key={contact.id}
                 className="bg-white rounded-sm shadow-sm p-2 border border-gray-200 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between gap-4">

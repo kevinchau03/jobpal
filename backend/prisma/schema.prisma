@@ -38,6 +38,9 @@ model Job {
 model Contact {
   id        String   @id @default(cuid())
   name      String
+  email     String?
+  phone     String?
+  linkedin  String?
   company   String
   status    String
   userId    String

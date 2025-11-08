@@ -4,8 +4,16 @@ import jwt from "jsonwebtoken";
 const COOKIE_NAME = "jid";
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
-  const token =
-    req.cookies?.[COOKIE_NAME] || null;
+  // Support both cookie and Authorization header authentication
+  let token = req.cookies?.[COOKIE_NAME] || null;
+  
+  // If no cookie, check for Authorization header (Bearer token)
+  if (!token) {
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith('Bearer ')) {
+      token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    }
+  }
 
   if (!token) return res.status(401).json({ message: "Missing token" });
 

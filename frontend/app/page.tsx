@@ -7,7 +7,7 @@ export default function Home() {
         <h1 className="text-3xl font-bold">welcome to <span className="underline text-accent">jobpal</span></h1>
         <p>an all in one tool to help you land your dream job.</p>
         <Link href="/signup">
-          <button className="mt-4 rounded bg-blue-500 px-4 py-2 text-white">Get Started</button>
+          <button className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:cursor-pointer">Get Started</button>
         </Link>
       </section>
 
