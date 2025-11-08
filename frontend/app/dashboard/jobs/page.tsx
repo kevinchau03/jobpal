@@ -157,21 +157,21 @@ export default function JobsPage() {
       {/* Add Job Button */}
       <div className="mb-6 flex justify-between items-center">
         <div className="flex items-center">
-          <div className="rounded-xl bg-red-400 px-4 py-2 mr-4">
-            <span>{jobs.filter(job => job.status === "SAVED").length} Saved Jobs</span>
-          </div>
-          <div className="rounded-xl bg-yellow-400 px-4 py-2 mr-4">
+          <div className="rounded-xl bg-red-400 px-4 py-2 mr-4 text-black">
             <span>{jobs.filter(job => job.status === "REJECTED").length} Rejected Jobs</span>
           </div>
           <div className="rounded-xl bg-green-400 px-4 py-2">
-            <span>{jobs.filter(job => job.status === "APPLIED").length} Applied Jobs</span>
+            <span>{jobs.filter(job => job.status === "OFFER").length} Offered Jobs</span>
           </div>
           <div className="rounded-xl bg-blue-400 px-4 py-2 ml-4">
             <span>{jobs.filter(job => job.status === "INTERVIEWING").length} Interviewing Jobs</span>
           </div>
+          <div className="rounded-xl bg-yellow-400 px-4 py-2 ml-4 text-black">
+            <span>{jobs.filter(job => job.status === "APPLIED").length} Applied Jobs</span>
+          </div>
         </div>
         <div className="flex items-center">
-          <input type="text" placeholder="Paste in job link" className="px-4 py-2 border border-gray-300 rounded-lg mr-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <input type="text" placeholder="Paste in job link" className="px-4 py-2 border border-border rounded-lg mr-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
           <button
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2 px-4 py-2 bg-secondary text-white rounded-lg hover:cursor-pointer transition-colors"
@@ -183,7 +183,7 @@ export default function JobsPage() {
       </div>
 
       {jobs.length === 0 ? (
-        <div className="bg-card border border-border rounded-lg shadow-sm p-6 text-center">
+        <div className="bg-card border border-border rounded-lg shadow-sm p-3 text-center">
           <Briefcase className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
           <p className="text-muted-foreground">No jobs found.</p>
         </div>
@@ -196,22 +196,16 @@ export default function JobsPage() {
             return (
               <div
                 key={job.id}
-                className="bg-card border border-border rounded-lg shadow-sm p-6 hover:shadow-md transition-all hover:border-gray-300"
+                className="bg-card border border-border rounded-lg shadow-sm p-3 hover:shadow-md transition-all hover:border-gray-300"
               >
-                <div className="flex items-start justify-between gap-6">
+                <div className="flex items-center justify-between gap-6">
                   {/* Left content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start gap-3 mb-3">
                       <h3 className="text-lg font-semibold text-foreground flex-1">
                         {job.title}
                       </h3>
-                      <span
-                        className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap ${badge}`}
-                      >
-                        {job.status}
-                      </span>
                     </div>
-
                     <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
                       {job.company && (
                         <div className="flex items-center gap-2">
@@ -230,6 +224,11 @@ export default function JobsPage() {
 
                   {/* Right actions */}
                   <div className="flex items-center gap-2 flex-shrink-0">
+                    <span
+                      className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap ${badge}`}
+                    >
+                      {job.status}
+                    </span>
                     <button
                       className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-md transition-colors"
                       onClick={() => handleEditJob(job)}

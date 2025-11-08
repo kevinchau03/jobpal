@@ -124,7 +124,7 @@ export default function DashboardPage() {
 
             {jobs.length === 0 && (
               <Link
-                className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-primary bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                className="bg-card inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-primary rounded-lg transition-colors"
                 href="/dashboard/jobs"
               >
                 Add your first job →
@@ -169,7 +169,7 @@ export default function DashboardPage() {
 
             {safeContacts.length === 0 && (
               <Link
-                className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-primary bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                className="bg-card inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-primary rounded-lg transition-colors"
                 href="/dashboard/contacts"
               >
                 Add your first contact →

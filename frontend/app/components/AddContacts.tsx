@@ -116,8 +116,8 @@ export default function AddContactForm({ onCreated }: Props) {
             <div className="flex flex-col gap-2">
                 <div>
                     <input
-                        className={`border rounded px-3 py-2 w-full ${
-                            validationErrors.name ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                        className={`border border-border rounded px-3 py-2 w-full ${
+                            validationErrors.name ? 'border-red-500 bg-red-50' : 'border-border'
                         }`}
                         placeholder="Name *"
                         value={name}
@@ -137,7 +137,7 @@ export default function AddContactForm({ onCreated }: Props) {
                 <div>
                     <input
                         className={`border rounded px-3 py-2 w-full ${
-                            validationErrors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                            validationErrors.email ? 'border-red-500 bg-red-50' : 'border-border'
                         }`}
                         placeholder="Email (e.g., john@company.com)"
                         type="email"
@@ -157,7 +157,7 @@ export default function AddContactForm({ onCreated }: Props) {
                 <div>
                     <input
                         className={`border rounded px-3 py-2 w-full ${
-                            validationErrors.phone ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                            validationErrors.phone ? 'border-red-500 bg-red-50' : 'border-border'
                         }`}
                         placeholder="Phone (e.g., +1-555-123-4567)"
                         type="tel"
@@ -177,7 +177,7 @@ export default function AddContactForm({ onCreated }: Props) {
                 <div>
                     <input
                         className={`border rounded px-3 py-2 w-full ${
-                            validationErrors.linkedin ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                            validationErrors.linkedin ? 'border-red-500 bg-red-50' : 'border-border'
                         }`}
                         placeholder="LinkedIn (URL or username)"
                         value={linkedin}
@@ -196,7 +196,7 @@ export default function AddContactForm({ onCreated }: Props) {
                 <div>
                     <input
                         className={`border rounded px-3 py-2 w-full ${
-                            validationErrors.company ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                            validationErrors.company ? 'border-red-500 bg-red-50' : 'border-border'
                         }`}
                         placeholder="Company"
                         value={company}
@@ -213,7 +213,7 @@ export default function AddContactForm({ onCreated }: Props) {
                 </div>
 
                 <select
-                    className="border rounded px-3 py-2 w-full border-gray-300"
+                    className="border rounded px-3 py-2 w-full border-border"
                     value={status}
                     onChange={(e) => setStatus(e.target.value as any)}
                 >
