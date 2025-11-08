@@ -4,10 +4,13 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <section className="mb-8 text-center">
-        <h1 className="text-3xl font-bold">welcome to <span className="underline text-accent">jobpal</span></h1>
+        <h1 className="text-3xl font-bold">welcome to <span className="underline text-primary">jobpal</span></h1>
         <p>an all in one tool to help you land your dream job.</p>
         <Link href="/signup">
-          <button className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:cursor-pointer">Get Started</button>
+          <button className="mt-4 rounded bg-primary px-4 py-2 text-white hover:cursor-pointer">Get Started</button>
+        </Link>
+        <Link href="/about">
+          <button className="mt-4 rounded bg-secondary px-4 py-2 text-white hover:cursor-pointer">Learn More</button>
         </Link>
       </section>
 

@@ -18,7 +18,7 @@ contactRouter.get("/", requireAuth, async (req, res) => {
     orderBy: { createdAt: "desc" },
     take: take + 1,
     ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
-    select: { id: true, name: true, company: true, status: true, createdAt: true },
+    select: { id: true, name: true, company: true, linkedin: true, phone: true, email: true, status: true, createdAt: true },
   });
 
   const nextCursor = contacts.length > take ? contacts[take].id : null;
@@ -54,10 +54,13 @@ contactRouter.get("/summary", requireAuth, async (req, res) => {
 contactRouter.post("/", requireAuth, async (req, res) => {
   try {
     const { sub: userId } = (req as any).user as { sub: string };
-    const { name, company, status } = req.body as {
+    const { name, company, status, linkedin, phone, email } = req.body as {
       name: string;
       company?: string;
       status?: "SAVED" | "APPLIED" | "INTERVIEWING" | "OFFER" | "REJECTED";
+      linkedin?: string;
+      phone?: string;
+      email?: string;
     };
 
     if (!name) return res.status(400).json({ message: "Name is required" });
@@ -67,6 +70,9 @@ contactRouter.post("/", requireAuth, async (req, res) => {
         name: name,
         company: company ?? null,
         status: status ?? "SAVED",
+        linkedin: linkedin ?? null,
+        phone: phone ?? null,
+        email: email ?? null, 
         userId,
       },
       select: { id: true, name: true, company: true, status: true, createdAt: true },

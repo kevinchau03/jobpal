@@ -31,6 +31,7 @@ export default function ContactsPage() {
         "/api/contacts?limit=20"
       );
       setContacts(items);
+      console.log(items);
     } catch (e: any) {
       setErr(e.message || "Failed to load contacts");
       setContacts([]);

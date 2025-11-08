@@ -66,7 +66,7 @@ export default function AddJobForm({ onCreated }: Props) {
             <button
                 type="submit"
                 disabled={busy}
-                className="rounded-sm bg-primary px-4 py-2 font-medium disabled:opacity-60"
+                className="rounded-sm bg-primary px-4 py-2 font-medium disabled:opacity-60 hover:cursor-pointer hover:bg-secondary"
             >
                 {busy ? <span className="flex items-center">
                     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
