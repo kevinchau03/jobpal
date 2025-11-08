@@ -78,3 +78,59 @@ jobRouter.post("/", requireAuth, async (req, res) => {
     res.status(500).json({ message: "Could not create job" });
   }
 });
+
+jobRouter.delete("/:id", requireAuth, async (req, res) => {
+  try {
+    const { sub: userId } = (req as any).user as { sub: string };
+    const jobId = req.params.id;
+
+    const job = await prisma.job.findUnique({ where: { id: jobId } });
+    if (!job || job.userId !== userId) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    await prisma.job.delete({ where: { id: jobId } });
+    res.status(204).end();
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Could not delete job" });
+  }
+});
+
+jobRouter.put("/:id", requireAuth, async (req, res) => {
+  try {
+    const { sub: userId } = (req as any).user as { sub: string };
+    const jobId = req.params.id;
+    const { title, company, status, email, linkedin, phone } = req.body as {
+      title?: string;
+      company?: string;
+      status?: "SAVED" | "APPLIED" | "INTERVIEWING" | "OFFER" | "REJECTED";
+      email?: string;
+      linkedin?: string;
+      phone?: string;
+    };
+
+    const job = await prisma.job.findUnique({ where: { id: jobId } });
+    if (!job || job.userId !== userId) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    const updatedJob = await prisma.job.update({
+      where: { id: jobId },
+      data: {
+        ...(title !== undefined ? { title } : {}),
+        ...(company !== undefined ? { company } : {}),
+        ...(status !== undefined ? { status } : {}),
+        ...(email !== undefined ? { email } : {}),
+        ...(linkedin !== undefined ? { linkedin } : {}),
+        ...(phone !== undefined ? { phone } : {}),
+      },
+      select: { id: true, title: true, company: true, status: true, createdAt: true },
+    });
+
+    res.json(updatedJob);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Could not update job" });
+  }
+});
