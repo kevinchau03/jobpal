@@ -106,7 +106,7 @@ export default function JobsPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <h3 className="text-xl font-semibold mb-2">{job.title}</h3>
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-700">
+                    <div className="flex flex-wrap gap-4 text-sm">
                       {job.company && (
                         <div className="flex items-center gap-2">
                           <Building2 className="w-4 h-4" />

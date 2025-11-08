@@ -100,7 +100,7 @@ export default function DashboardPage() {
               </Link>
             </div>
 
-            <Card title="">
+            <Card>
               {jobs.length === 0 ? (
                 <Empty text="No jobs yet. Add your first application." />
               ) : (
@@ -144,7 +144,7 @@ export default function DashboardPage() {
               </Link>
             </div>
 
-            <Card title="">
+            <Card>
               {safeContacts.length === 0 ? (
                 <Empty text="No contacts yet. Add a recruiter or hiring manager." />
               ) : (
@@ -192,12 +192,9 @@ function KPI({ label, value }: { label: string; value: number }) {
   );
 }
 
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
+function Card({ children }: { children: React.ReactNode }) {
   return (
     <div className="rounded-sm shadow-sm bg-card border border-border">
-      <div className="px-2 py-2 border-b">
-        <h2 className="text-lg font-semibold ">{title}</h2>
-      </div>
       <div className="p-5">{children}</div>
     </div>
   );
