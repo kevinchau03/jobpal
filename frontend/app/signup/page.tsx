@@ -61,6 +61,7 @@ export default function SignUpPage() {
     return (
         <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
+                <h1 className="text-4xl font-bold text-center text-primary mb-6">jobpal.</h1>
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold">
                         Create your account
