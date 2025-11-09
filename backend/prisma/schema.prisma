@@ -14,6 +14,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum CONTACT_STATUS {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+enum JOB_TYPE {
+  PART_TIME
+  FULL_TIME
+  INTERNSHIP
+  CONTRACT
+}
+
+enum JOB_STATUS {
+  SAVED
+  APPLIED
+  SCREEN
+  INTERVIEWING
+  OFFER
+  WITHDRAWN
+  GHOSTED
+  REJECTED
+}
+
 model User {
   id        String    @id @default(cuid())
   email     String    @unique
@@ -29,21 +53,23 @@ model Job {
   id        String   @id @default(cuid())
   title     String
   company   String?
-  status    String   @default("SAVED")
+  location  String?
+  jobType   JOB_TYPE?
+  status    JOB_STATUS @default(SAVED)
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }
 
 model Contact {
-  id        String   @id @default(cuid())
+  id        String         @id @default(cuid())
   name      String
   email     String?
   phone     String?
   linkedin  String?
   company   String
-  status    String
+  status    CONTACT_STATUS @default(ACTIVE)
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
+  user      User           @relation(fields: [userId], references: [id])
+  createdAt DateTime       @default(now())
 }

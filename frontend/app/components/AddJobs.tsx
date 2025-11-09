@@ -3,17 +3,19 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { api } from "@/lib/api";
 
-type Job = { id: string; title: string; company?: string | null; status: string; createdAt: string };
-type Props = { 
-  isOpen: boolean;
-  onClose: () => void;
-  onCreated?: () => void;
+type Job = { id: string; title: string; company?: string | null; status: string; createdAt: string, location?: string | null, jobType?: string | null };
+type Props = {
+    isOpen: boolean;
+    onClose: () => void;
+    onCreated?: () => void;
 };
 
 export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
     const [title, setTitle] = useState("");
     const [company, setCompany] = useState("");
-    const [status, setStatus] = useState<"SAVED" | "APPLIED" | "INTERVIEWING" | "OFFER" | "REJECTED">("SAVED");
+    const [status, setStatus] = useState<"SAVED" | "APPLIED" | "SCREEN" | "INTERVIEWING" | "OFFER" | "WITHDRAWN" | "GHOSTED" | "REJECTED">("SAVED");
+    const [location, setLocation] = useState("");
+    const [jobType, setJobType] = useState<"PART_TIME" | "FULL_TIME" | "INTERNSHIP" | "CONTRACT" | "">("");
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -51,24 +53,26 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        
+
         if (!validateForm()) {
             return;
         }
 
         setBusy(true);
         setError(null);
-        
+
         try {
             await api<Job>("/api/jobs", {
                 method: "POST",
-                body: JSON.stringify({ 
-                    title: title.trim(), 
-                    company: company.trim() || null, 
-                    status 
+                body: JSON.stringify({
+                    title: title.trim(),
+                    company: company.trim() || null,
+                    status,
+                    location: location.trim() || null,
+                    jobType: jobType || null,
                 }),
             });
-            
+
             resetForm();
             onCreated?.();
             onClose();
@@ -83,14 +87,14 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={handleClose}
-          />
+            {/* Backdrop */}
+            <div
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                onClick={handleClose}
+            />
 
-          {/* Modal Content */}
-          <div className="relative bg-card rounded-lg p-6 w-full max-w-md mx-4 shadow-xl border border-border">
+            {/* Modal Content */}
+            <div className="relative bg-card rounded-lg p-6 w-full max-w-md mx-4 shadow-xl border border-border">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold">Add New Job</h3>
                     <button
@@ -116,9 +120,8 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
                                     setValidationErrors(prev => ({ ...prev, title: '' }));
                                 }
                             }}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                validationErrors.title ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                            }`}
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${validationErrors.title ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                                }`}
                             placeholder="e.g., Software Engineer"
                             required
                         />
@@ -141,9 +144,8 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
                                     setValidationErrors(prev => ({ ...prev, company: '' }));
                                 }
                             }}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                validationErrors.company ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                            }`}
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${validationErrors.company ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                                }`}
                             placeholder="e.g., Google"
                         />
                         {validationErrors.company && (
@@ -152,21 +154,57 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
                     </div>
 
                     <div>
-                        <label htmlFor="job-status" className="block text-sm font-medium mb-1">
-                            Status
+                        <label htmlFor="job-location" className="block text-sm font-medium mb-1">
+                            Location
                         </label>
-                        <select
-                            id="job-status"
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value as any)}
+                        <input
+                            id="job-location"
+                            type="text"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="SAVED">Saved</option>
-                            <option value="APPLIED">Applied</option>
-                            <option value="INTERVIEWING">Interviewing</option>
-                            <option value="OFFER">Offer</option>
-                            <option value="REJECTED">Rejected</option>
-                        </select>
+                            placeholder="e.g., New York, NY"
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label htmlFor="job-status" className="block text-sm font-medium mb-1">
+                                Status
+                            </label>
+                            <select
+                                id="job-status"
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value as any)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="SAVED">Saved</option>
+                                <option value="APPLIED">Applied</option>
+                                <option value="INTERVIEWING">Interviewing</option>
+                                <option value="OFFER">Offer</option>
+                                <option value="REJECTED">Rejected</option>
+                                <option value="WITHDRAWN">Withdrawn</option>
+                                <option value="GHOSTED">Ghosted</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label htmlFor="job-type" className="block text-sm font-medium mb-1">
+                                Job Type
+                            </label>
+                            <select
+                                id="job-type"
+                                value={jobType}
+                                onChange={(e) => setJobType(e.target.value as any)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="">Select Job Type</option>
+                                <option value="FULL_TIME">Full-time</option>
+                                <option value="PART_TIME">Part-time</option>
+                                <option value="INTERNSHIP">Internship</option>
+                                <option value="CONTRACT">Contract</option>
+                            </select>
+                        </div>
                     </div>
 
                     {error && (

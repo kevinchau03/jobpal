@@ -9,6 +9,8 @@ type Job = {
   id: string;
   title: string;
   company?: string | null;
+  location?: string | null;
+  jobType?: "PART_TIME" | "FULL_TIME" | "INTERNSHIP" | "CONTRACT" | string;
   status: "SAVED" | "APPLIED" | "INTERVIEWING" | "OFFER" | "REJECTED" | string;
   createdAt: string;
 };
@@ -35,7 +37,9 @@ export default function JobsPage() {
   const [editForm, setEditForm] = useState({
     title: "",
     company: "",
-    status: "SAVED" as Job["status"]
+    status: "SAVED" as Job["status"],
+    location: "",
+    jobType: "" as Job["jobType"]
   });
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
@@ -74,7 +78,9 @@ export default function JobsPage() {
     setEditForm({
       title: job.title,
       company: job.company || "",
-      status: job.status
+      status: job.status,
+      location: job.location || "",
+      jobType: job.jobType || ""
     });
     setEditError(null);
   };
@@ -221,6 +227,14 @@ export default function JobsPage() {
                           {new Date(job.createdAt).toLocaleDateString()}
                         </span>
                       </div>
+                      <div className="flex items-center gap-2">
+                        <Briefcase className="w-4 h-4 flex-shrink-0" />
+                        <span>{job.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Briefcase className="w-4 h-4 flex-shrink-0" />
+                        <span>{job.jobType}</span>
+                      </div>
                     </div>
                   </div>
 
@@ -305,22 +319,43 @@ export default function JobsPage() {
                 />
               </div>
 
-              <div>
-                <label htmlFor="edit-status" className="block text-sm font-medium mb-1">
-                  Status
-                </label>
-                <select
-                  id="edit-status"
-                  value={editForm.status}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value as Job["status"] }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="SAVED">Saved</option>
-                  <option value="APPLIED">Applied</option>
-                  <option value="INTERVIEWING">Interviewing</option>
-                  <option value="OFFER">Offer</option>
-                  <option value="REJECTED">Rejected</option>
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="edit-status" className="block text-sm font-medium mb-1">
+                    Status
+                  </label>
+                  <select
+                    id="edit-status"
+                    value={editForm.status}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value as Job["status"] }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="SAVED">Saved</option>
+                    <option value="APPLIED">Applied</option>
+                    <option value="INTERVIEWING">Interviewing</option>
+                    <option value="OFFER">Offer</option>
+                    <option value="REJECTED">Rejected</option>
+                    <option value="WITHDRAWN">Withdrawn</option>
+                    <option value="GHOSTED">Ghosted</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="job-type" className="block text-sm font-medium mb-1">
+                    Job Type
+                  </label>
+                  <select
+                    id="job-type"
+                    value={editForm.jobType}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, jobType: e.target.value as Job["jobType"] }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select Job Type</option>
+                    <option value="FULL_TIME">Full-time</option>
+                    <option value="PART_TIME">Part-time</option>
+                    <option value="INTERNSHIP">Internship</option>
+                    <option value="CONTRACT">Contract</option>
+                  </select>
+                </div>
               </div>
 
               {editError && (

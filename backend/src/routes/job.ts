@@ -14,11 +14,18 @@ jobRouter.get("/", requireAuth, async (req, res) => {
   const where = { userId, ...(status ? { status } : {}) };
 
   const jobs = await prisma.job.findMany({
-    where,
     orderBy: { createdAt: "desc" },
     take: take + 1,
     ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
-    select: { id: true, title: true, company: true, status: true, createdAt: true },
+    select: { 
+      id: true, 
+      title: true, 
+      company: true, 
+      status: true, 
+      location: true,
+      jobType: true,
+      createdAt: true 
+    },
   });
 
   const nextCursor = jobs.length > take ? jobs[take].id : null;
@@ -43,8 +50,11 @@ jobRouter.get("/summary", requireAuth, async (req, res) => {
     total: grouped.reduce((a, g) => a + g._count._all, 0),
     SAVED: toCount("SAVED"),
     APPLIED: toCount("APPLIED"),
+    SCREEN: toCount("SCREEN"),
     INTERVIEWING: toCount("INTERVIEWING"),
     OFFER: toCount("OFFER"),
+    WITHDRAWN: toCount("WITHDRAWN"),
+    GHOSTED: toCount("GHOSTED"),
     REJECTED: toCount("REJECTED"),
   });
 });
@@ -54,10 +64,12 @@ jobRouter.get("/summary", requireAuth, async (req, res) => {
 jobRouter.post("/", requireAuth, async (req, res) => {
   try {
     const { sub: userId } = (req as any).user as { sub: string };
-    const { title, company, status } = req.body as {
+    const { title, company, status, location, jobType } = req.body as {
       title: string;
       company?: string;
-      status?: "SAVED" | "APPLIED" | "INTERVIEWING" | "OFFER" | "REJECTED";
+      status?: "SAVED" | "APPLIED" | "SCREEN" | "INTERVIEWING" | "OFFER" | "WITHDRAWN" | "GHOSTED" | "REJECTED";
+      location?: string;
+      jobType?: "PART_TIME" | "FULL_TIME" | "INTERNSHIP" | "CONTRACT";
     };
 
     if (!title) return res.status(400).json({ message: "Title is required" });
@@ -67,9 +79,19 @@ jobRouter.post("/", requireAuth, async (req, res) => {
         title,
         company: company ?? null,
         status: status ?? "SAVED",
+        location: location ?? null,
+        jobType: jobType ?? null,
         userId,
       },
-      select: { id: true, title: true, company: true, status: true, createdAt: true },
+      select: { 
+        id: true, 
+        title: true, 
+        company: true, 
+        status: true, 
+        location: true,
+        jobType: true,
+        createdAt: true 
+      },
     });
 
     res.status(201).json(job);
@@ -101,13 +123,12 @@ jobRouter.put("/:id", requireAuth, async (req, res) => {
   try {
     const { sub: userId } = (req as any).user as { sub: string };
     const jobId = req.params.id;
-    const { title, company, status, email, linkedin, phone } = req.body as {
+    const { title, company, status, location, jobType } = req.body as {
       title?: string;
       company?: string;
-      status?: "SAVED" | "APPLIED" | "INTERVIEWING" | "OFFER" | "REJECTED";
-      email?: string;
-      linkedin?: string;
-      phone?: string;
+      status?: "SAVED" | "APPLIED" | "SCREEN" | "INTERVIEWING" | "OFFER" | "WITHDRAWN" | "GHOSTED" | "REJECTED";
+      location?: string;
+      jobType?: "PART_TIME" | "FULL_TIME" | "INTERNSHIP" | "CONTRACT";
     };
 
     const job = await prisma.job.findUnique({ where: { id: jobId } });
@@ -121,11 +142,18 @@ jobRouter.put("/:id", requireAuth, async (req, res) => {
         ...(title !== undefined ? { title } : {}),
         ...(company !== undefined ? { company } : {}),
         ...(status !== undefined ? { status } : {}),
-        ...(email !== undefined ? { email } : {}),
-        ...(linkedin !== undefined ? { linkedin } : {}),
-        ...(phone !== undefined ? { phone } : {}),
+        ...(location !== undefined ? { location } : {}),
+        ...(jobType !== undefined ? { jobType } : {}),
       },
-      select: { id: true, title: true, company: true, status: true, createdAt: true },
+      select: {
+        id: true,
+        title: true,
+        company: true,
+        status: true,
+        location: true,
+        jobType: true,
+        createdAt: true
+      },
     });
 
     res.json(updatedJob);
