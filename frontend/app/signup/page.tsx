@@ -74,7 +74,7 @@ export default function SignUpPage() {
                                 name="firstName"
                                 type="text"
                                 required
-                                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border text-white placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="First name"
                                 value={formData.firstName}
                                 onChange={handleChange}
@@ -83,7 +83,7 @@ export default function SignUpPage() {
                                 name="lastName"
                                 type="text"
                                 required
-                                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border text-white placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="Last name"
                                 value={formData.lastName}
                                 onChange={handleChange}
@@ -93,7 +93,7 @@ export default function SignUpPage() {
                             name="email"
                             type="email"
                             required
-                            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border text-white placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                             placeholder="Email address"
                             value={formData.email}
                             onChange={handleChange}
@@ -102,7 +102,7 @@ export default function SignUpPage() {
                             name="password"
                             type="password"
                             required
-                            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border text-white placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                             placeholder="Password"
                             value={formData.password}
                             onChange={handleChange}
@@ -111,7 +111,7 @@ export default function SignUpPage() {
                             name="confirmPassword"
                             type="password"
                             required
-                            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border text-white placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                             placeholder="Confirm password"
                             value={formData.confirmPassword}
                             onChange={handleChange}

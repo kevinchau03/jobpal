@@ -103,7 +103,9 @@ export default function JobsPage() {
         body: JSON.stringify({
           title: editForm.title.trim(),
           company: editForm.company.trim() || null,
-          status: editForm.status
+          status: editForm.status,
+          location: editForm.location.trim() || null,
+          jobType: editForm.jobType || null
         }),
       });
 
@@ -204,7 +206,7 @@ export default function JobsPage() {
             return (
               <div
                 key={job.id}
-                className="bg-card border border-border rounded-lg shadow-sm p-3 hover:shadow-md transition-all hover:border-gray-300"
+                className="bg-card border border-border rounded-lg shadow-sm p-3 hover:shadow-md transition-all hover:border-border"
               >
                 <div className="flex items-center justify-between gap-6">
                   {/* Left content */}
@@ -299,7 +301,7 @@ export default function JobsPage() {
                     setEditForm(prev => ({ ...prev, title: e.target.value }));
                     setEditError(null);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter job title"
                   required
                 />
@@ -314,7 +316,7 @@ export default function JobsPage() {
                   type="text"
                   value={editForm.company}
                   onChange={(e) => setEditForm(prev => ({ ...prev, company: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter company name"
                 />
               </div>
@@ -328,7 +330,7 @@ export default function JobsPage() {
                     id="edit-status"
                     value={editForm.status}
                     onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value as Job["status"] }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="SAVED">Saved</option>
                     <option value="APPLIED">Applied</option>
@@ -347,7 +349,7 @@ export default function JobsPage() {
                     id="job-type"
                     value={editForm.jobType}
                     onChange={(e) => setEditForm(prev => ({ ...prev, jobType: e.target.value as Job["jobType"] }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Select Job Type</option>
                     <option value="FULL_TIME">Full-time</option>

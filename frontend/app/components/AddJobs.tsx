@@ -120,7 +120,7 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
                                     setValidationErrors(prev => ({ ...prev, title: '' }));
                                 }
                             }}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${validationErrors.title ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${validationErrors.title ? 'border-red-500 bg-red-50' : 'border-border'
                                 }`}
                             placeholder="e.g., Software Engineer"
                             required
@@ -144,7 +144,7 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
                                     setValidationErrors(prev => ({ ...prev, company: '' }));
                                 }
                             }}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${validationErrors.company ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${validationErrors.company ? 'border-red-500 bg-red-50' : 'border-border'
                                 }`}
                             placeholder="e.g., Google"
                         />
@@ -162,7 +162,7 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
                             type="text"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="e.g., New York, NY"
                         />
                     </div>
@@ -176,7 +176,7 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
                                 id="job-status"
                                 value={status}
                                 onChange={(e) => setStatus(e.target.value as any)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="SAVED">Saved</option>
                                 <option value="APPLIED">Applied</option>
@@ -196,7 +196,7 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
                                 id="job-type"
                                 value={jobType}
                                 onChange={(e) => setJobType(e.target.value as any)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">Select Job Type</option>
                                 <option value="FULL_TIME">Full-time</option>

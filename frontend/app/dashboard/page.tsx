@@ -73,11 +73,9 @@ export default function DashboardPage() {
   const totalApps = jobs.length;
   const totalContacts = safeContacts.length;  return (
     <main className="min-h-screen p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-secondary">Dashboard</h1>
-          <p className=" mt-1">"Just got to keep on pushing!"</p>
         </div>
 
         {/* KPI cards */}
@@ -177,7 +175,6 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
-      </div>
     </main>
   );
 }
