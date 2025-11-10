@@ -27,6 +27,11 @@ export default function LoginPage() {
                 throw new Error(payload?.message || `Login failed (HTTP ${res.status})`);
             }
 
+            if (payload?.message === "Please verify your email before logging in") {
+                router.push(`/verify?email=${encodeURIComponent(email)}`);
+                return;
+            }
+
             const { token, user } = payload as { token: string; user: any };
             if (!token) throw new Error("Login response missing token");
 

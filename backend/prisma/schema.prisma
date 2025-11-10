@@ -38,13 +38,33 @@ enum JOB_STATUS {
   REJECTED
 }
 
+enum REMINDER_TYPE {
+  FOLLOW_UP
+  INTERVIEW
+  ASSESSMENT
+  DEADLINE
+  CALL
+  EMAIL
+  OTHER
+}
+
+enum REMINDER_STATUS {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
 model User {
   id        String    @id @default(cuid())
   email     String    @unique
   password  String?
   name      String?
   createdAt DateTime  @default(now())
-  role      String?
+  updatedAt DateTime  @updatedAt
+  role      String?   @default("USER")
+  emailVerified Boolean @default(false)
+  verificationCode  String?
+  verificationCodeExpires DateTime?
   jobs      Job[]
   contacts  Contact[]
 }
@@ -58,6 +78,7 @@ model Job {
   status    JOB_STATUS @default(SAVED)
   userId    String
   user      User     @relation(fields: [userId], references: [id])
+  reminders JobReminder[]
   createdAt DateTime @default(now())
 }
 
@@ -72,4 +93,17 @@ model Contact {
   userId    String
   user      User           @relation(fields: [userId], references: [id])
   createdAt DateTime       @default(now())
+}
+
+model JobReminder {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  type        REMINDER_TYPE
+  status      REMINDER_STATUS @default(PENDING)
+  dueDate     DateTime
+  jobId       String
+  job         Job            @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
