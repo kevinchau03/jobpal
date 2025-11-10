@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuthRedirect } from '@/hooks/useAuth';
 
 export default function SignUpPage() {
     const [formData, setFormData] = useState({
@@ -16,6 +17,21 @@ export default function SignUpPage() {
     const [error, setError] = useState('');
     const [showVerification, setShowVerification] = useState(false);
     const router = useRouter();
+
+    // Redirect to dashboard if already logged in
+    const { isLoading: authLoading } = useAuthRedirect('/dashboard');
+
+    // Show loading spinner while checking auth status
+    if (authLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-2 text-gray-600">Checking authentication...</p>
+                </div>
+            </div>
+        );
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
