@@ -1,39 +1,39 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import { Briefcase, Building2, Calendar, Edit2, X, Plus } from "lucide-react";
-import { api } from "@/lib/api";
 import AddJobModal from "../../components/AddJobs";
-
-type Job = {
-  id: string;
-  title: string;
-  company?: string | null;
-  location?: string | null;
-  jobType?: "PART_TIME" | "FULL_TIME" | "INTERNSHIP" | "CONTRACT" | string;
-  status: "SAVED" | "APPLIED" | "INTERVIEWING" | "OFFER" | "REJECTED" | string;
-  createdAt: string;
-};
+import { 
+  useJobs, 
+  useDeleteJob, 
+  useUpdateJob, 
+  Job 
+} from "@/hooks/useJobs";
 
 const statusColors: Record<string, string> = {
   SAVED: "bg-gray-100 text-gray-700",
   APPLIED: "bg-blue-100 text-blue-700",
+  SCREEN: "bg-purple-100 text-purple-700",
   INTERVIEWING: "bg-yellow-100 text-yellow-700",
   OFFER: "bg-green-100 text-green-700",
+  WITHDRAWN: "bg-orange-100 text-orange-700",
+  GHOSTED: "bg-gray-100 text-gray-600",
   REJECTED: "bg-rose-100 text-rose-700",
   default: "bg-gray-100 text-gray-700",
 };
 
 export default function JobsPage() {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState<string | null>(null);
+  // React Query hooks
+  const { data: jobsData, isLoading: loading, error } = useJobs();
+  const deleteJobMutation = useDeleteJob();
+  const updateJobMutation = useUpdateJob();
 
-  // Add modal state
+  // Modal states
   const [showAddModal, setShowAddModal] = useState(false);
-
+  
   // Edit modal state
   const [editingJob, setEditingJob] = useState<Job | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
     title: "",
     company: "",
@@ -41,33 +41,15 @@ export default function JobsPage() {
     location: "",
     jobType: "" as Job["jobType"]
   });
-  const [editLoading, setEditLoading] = useState(false);
-  const [editError, setEditError] = useState<string | null>(null);
 
-  const loadJobs = useCallback(async () => {
-    setLoading(true);
-    setErr(null);
-    try {
-      const { items } = await api<{ items: Job[]; nextCursor: string | null }>(
-        "/api/jobs?limit=20"
-      );
-      setJobs(items);
-    } catch (e: any) {
-      setErr(e.message || "Failed to load jobs");
-      setJobs([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const jobs = jobsData?.items || [];
+  const err = error?.message || null;
 
   const handleDeleteJob = async (jobId: string) => {
     if (!confirm("Are you sure you want to delete this job?")) return;
 
     try {
-      await api(`/api/jobs/${jobId}`, {
-        method: "DELETE",
-      });
-      await loadJobs();
+      await deleteJobMutation.mutateAsync(jobId);
     } catch (e: any) {
       alert(e.message || "Failed to delete job");
     }
@@ -80,9 +62,19 @@ export default function JobsPage() {
       company: job.company || "",
       status: job.status,
       location: job.location || "",
-      jobType: job.jobType || ""
+      jobType: job.jobType || null
     });
-    setEditError(null);
+  };
+
+  const closeEditModal = () => {
+    setEditingJob(null);
+    setEditForm({
+      title: "",
+      company: "",
+      status: "SAVED",
+      location: "",
+      jobType: null
+    });
   };
 
   const handleUpdateJob = async (e: React.FormEvent) => {
@@ -90,44 +82,29 @@ export default function JobsPage() {
     if (!editingJob) return;
 
     if (!editForm.title.trim()) {
-      setEditError("Title is required");
       return;
     }
 
-    setEditLoading(true);
-    setEditError(null);
-
     try {
-      await api(`/api/jobs/${editingJob.id}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          title: editForm.title.trim(),
-          company: editForm.company.trim() || null,
+      await updateJobMutation.mutateAsync({
+        id: editingJob.id,
+        data: {
+          title: editForm.title,
+          company: editForm.company || undefined,
           status: editForm.status,
-          location: editForm.location.trim() || null,
-          jobType: editForm.jobType || null
-        }),
+          location: editForm.location || undefined,
+          jobType: editForm.jobType || undefined,
+        },
       });
-
       setEditingJob(null);
-      await loadJobs();
     } catch (e: any) {
-      setEditError(e.message || "Failed to update job");
-    } finally {
-      setEditLoading(false);
+      alert(e.message || "Failed to update job");
     }
   };
 
-  const closeEditModal = () => {
-    setTimeout(() => {
-      setEditingJob(null);
-      setEditError(null);
-    }, 150); // 150ms for exit animation
+  const handleCancelEdit = () => {
+    setEditingJob(null);
   };
-
-  useEffect(() => {
-    loadJobs();
-  }, [loadJobs]);
 
   if (loading && jobs.length === 0) {
     return (
@@ -347,8 +324,11 @@ export default function JobsPage() {
                   </label>
                   <select
                     id="job-type"
-                    value={editForm.jobType}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, jobType: e.target.value as Job["jobType"] }))}
+                    value={editForm.jobType || ""}
+                    onChange={(e) => setEditForm(prev => ({ 
+                      ...prev, 
+                      jobType: e.target.value as Job["jobType"] || null 
+                    }))}
                     className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Select Job Type</option>
@@ -360,24 +340,20 @@ export default function JobsPage() {
                 </div>
               </div>
 
-              {editError && (
-                <p className="text-red-500 text-sm">{editError}</p>
-              )}
-
               <div className="flex gap-3 pt-4">
                 <button
                   type="button"
-                  onClick={closeEditModal}
+                  onClick={handleCancelEdit}
                   className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors hover:cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={editLoading}
+                  disabled={updateJobMutation.isPending}
                   className="flex-1 px-4 py-2 bg-secondary text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors hover:cursor-pointer"
                 >
-                  {editLoading ? (
+                  {updateJobMutation.isPending ? (
                     <span className="flex items-center justify-center">
                       <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -397,7 +373,6 @@ export default function JobsPage() {
       <AddJobModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
-        onCreated={loadJobs}
       />
     </div>
   );

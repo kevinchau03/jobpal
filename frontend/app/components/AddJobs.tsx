@@ -1,24 +1,23 @@
 "use client";
 import { useState } from "react";
 import { X } from "lucide-react";
-import { api } from "@/lib/api";
+import { useCreateJob, CreateJobData } from "@/hooks/useJobs";
 
-type Job = { id: string; title: string; company?: string | null; status: string; createdAt: string, location?: string | null, jobType?: string | null };
 type Props = {
     isOpen: boolean;
     onClose: () => void;
-    onCreated?: () => void;
 };
 
-export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
+export default function AddJobModal({ isOpen, onClose }: Props) {
     const [title, setTitle] = useState("");
     const [company, setCompany] = useState("");
-    const [status, setStatus] = useState<"SAVED" | "APPLIED" | "SCREEN" | "INTERVIEWING" | "OFFER" | "WITHDRAWN" | "GHOSTED" | "REJECTED">("SAVED");
+    const [status, setStatus] = useState<CreateJobData["status"]>("SAVED");
     const [location, setLocation] = useState("");
-    const [jobType, setJobType] = useState<"PART_TIME" | "FULL_TIME" | "INTERNSHIP" | "CONTRACT" | "">("");
-    const [busy, setBusy] = useState(false);
+    const [jobType, setJobType] = useState<CreateJobData["jobType"] | "">(null);
     const [error, setError] = useState<string | null>(null);
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+    const createJobMutation = useCreateJob();
 
     // Validation function
     const validateForm = () => {
@@ -42,6 +41,8 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
         setTitle("");
         setCompany("");
         setStatus("SAVED");
+        setLocation("");
+        setJobType(null);
         setError(null);
         setValidationErrors({});
     };
@@ -58,28 +59,21 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
             return;
         }
 
-        setBusy(true);
         setError(null);
 
         try {
-            await api<Job>("/api/jobs", {
-                method: "POST",
-                body: JSON.stringify({
-                    title: title.trim(),
-                    company: company.trim() || null,
-                    status,
-                    location: location.trim() || null,
-                    jobType: jobType || null,
-                }),
+            await createJobMutation.mutateAsync({
+                title: title.trim(),
+                company: company.trim() || undefined,
+                status,
+                location: location.trim() || undefined,
+                jobType: jobType || undefined,
             });
 
             resetForm();
-            onCreated?.();
             onClose();
         } catch (e: any) {
             setError(e.message || "Could not save job");
-        } finally {
-            setBusy(false);
         }
     }
 
@@ -194,8 +188,8 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
                             </label>
                             <select
                                 id="job-type"
-                                value={jobType}
-                                onChange={(e) => setJobType(e.target.value as any)}
+                                value={jobType || ""}
+                                onChange={(e) => setJobType(e.target.value as CreateJobData["jobType"] || null)}
                                 className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">Select Job Type</option>
@@ -221,10 +215,10 @@ export default function AddJobModal({ isOpen, onClose, onCreated }: Props) {
                         </button>
                         <button
                             type="submit"
-                            disabled={busy}
+                            disabled={createJobMutation.isPending}
                             className="flex-1 px-4 py-2 bg-secondary text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors hover:cursor-pointer"
                         >
-                            {busy ? (
+                            {createJobMutation.isPending ? (
                                 <span className="flex items-center justify-center">
                                     <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
