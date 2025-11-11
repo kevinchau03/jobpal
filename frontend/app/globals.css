@@ -8,12 +8,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-primary: #00FF85;
-  --color-secondary: #00A3FF;
+  --color-primary: #A8DADC;
+  --color-secondary: #FFC1CC;
   --color-card: #1E1E1E;
   --color-border: #2A2A2A;
+  --color-card-hover: #2C2C2C;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -26,5 +25,4 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-mono);
 }

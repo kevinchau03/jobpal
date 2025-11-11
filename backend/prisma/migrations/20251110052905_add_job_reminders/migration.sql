@@ -1,0 +1,23 @@
+-- CreateEnum
+CREATE TYPE "REMINDER_TYPE" AS ENUM ('FOLLOW_UP', 'INTERVIEW', 'ASSESSMENT', 'DEADLINE', 'CALL', 'EMAIL', 'OTHER');
+
+-- CreateEnum
+CREATE TYPE "REMINDER_STATUS" AS ENUM ('PENDING', 'COMPLETED', 'CANCELLED');
+
+-- CreateTable
+CREATE TABLE "JobReminder" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT,
+    "type" "REMINDER_TYPE" NOT NULL,
+    "status" "REMINDER_STATUS" NOT NULL DEFAULT 'PENDING',
+    "dueDate" TIMESTAMP(3) NOT NULL,
+    "jobId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "JobReminder_pkey" PRIMARY KEY ("id")
+);
+
+-- AddForeignKey
+ALTER TABLE "JobReminder" ADD CONSTRAINT "JobReminder_jobId_fkey" FOREIGN KEY ("jobId") REFERENCES "Job"("id") ON DELETE CASCADE ON UPDATE CASCADE;

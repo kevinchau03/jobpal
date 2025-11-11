@@ -1,6 +1,6 @@
 "use client";
 import { useRouter, usePathname } from "next/navigation";
-import { LogOut, LayoutDashboard, PersonStanding, BookUser, ContactRound } from "lucide-react";
+import { LogOut, LayoutDashboard, PersonStanding, BookUser, ContactRound, Bell } from "lucide-react";
 import { api } from "@/lib/api";
 
 type SidebarProps = {
@@ -19,6 +19,7 @@ export default function Sidebar({ userName }: SidebarProps) {
   const links = [
     { name: "Dashboard", path: "/dashboard", icon: <LayoutDashboard className="h-4 w-4" /> },
     { name: "Jobs", path: "/dashboard/jobs", icon: <PersonStanding className="h-4 w-4" /> },
+    { name: "Reminders", path: "/dashboard/reminders", icon: <Bell className="h-4 w-4" /> },
     { name: "Contacts", path: "/dashboard/contacts", icon: <BookUser className="h-4 w-4" /> },
     { name: "Preferences", path: "/dashboard/preferences", icon: <ContactRound className="h-4 w-4" /> },
   ];

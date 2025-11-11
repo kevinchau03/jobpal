@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import RemindersWidget from "@/app/components/RemindersWidget";
 
 type Job = { id: string; title: string; company?: string | null; status: string; createdAt: string };
 type Contact = { id: string; name: string; email?: string | null; company?: string | null; createdAt: string };
@@ -68,113 +69,118 @@ export default function DashboardPage() {
 
   // Ensure contacts is always an array
   const safeContacts = Array.isArray(contacts) ? contacts : [];
-  
+
   // Compute totals from the data we already have
   const totalApps = jobs.length;
-  const totalContacts = safeContacts.length;  return (
-    <main className="min-h-screen p-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-secondary">Dashboard</h1>
-        </div>
+  const totalContacts = safeContacts.length; return (
+    <main className="min-h-screen p-6 flex flex-col gap-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-secondary">Dashboard</h1>
+      </div>
 
-        {/* KPI cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <KPI label="Total Applications" value={totalApps} />
-          <KPI label="Total Contacts" value={totalContacts} />
-        </div>
+      {/* KPI cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <KPI label="Total Applications" value={totalApps} />
+        <KPI label="Total Contacts" value={totalContacts} />
+      </div>
 
-        {/* Recent Activity Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Jobs */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Recent Jobs</h2>
-              <Link
-                className="text-sm font-medium text-primary hover:text-blue-700 transition-colors"
-                href="/dashboard/jobs"
-              >
-                View all →
-              </Link>
-            </div>
+      {/* Reminders Widget */}
+      <div className="mb-6">
+        <RemindersWidget />
+      </div>
 
-            <Card>
-              {jobs.length === 0 ? (
-                <Empty text="No jobs yet. Add your first application." />
-              ) : (
-                <ul className="divide-y divide-gray-100">
-                  {jobs.slice(0, 3).map((j) => (
-                    <li key={j.id} className="py-4 first:pt-0 last:pb-0">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0 flex-1">
-                          <div className="font-semibold truncate">{j.title}</div>
-                          <div className="text-sm  mt-1">{j.company || "—"}</div>
-                        </div>
-                        <div className="text-sm text-gray-500 whitespace-nowrap">
-                          {new Date(j.createdAt).toLocaleDateString()}
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Card>
-
-            {jobs.length === 0 && (
-              <Link
-                className="bg-card inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-primary rounded-lg transition-colors"
-                href="/dashboard/jobs"
-              >
-                Add your first job →
-              </Link>
-            )}
+      {/* Recent Activity Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Jobs */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold">Recent Jobs</h2>
+            <Link
+              className="text-sm font-medium text-primary hover:text-blue-700 transition-colors"
+              href="/dashboard/jobs"
+            >
+              View all →
+            </Link>
           </div>
 
-          {/* Recent Contacts */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Recent Contacts</h2>
-              <Link
-                className="text-sm font-medium text-primary hover:text-blue-700 transition-colors"
-                href="/dashboard/contacts"
-              >
-                View all →
-              </Link>
-            </div>
-
-            <Card>
-              {safeContacts.length === 0 ? (
-                <Empty text="No contacts yet. Add a recruiter or hiring manager." />
-              ) : (
-                <ul className="divide-y divide-gray-100">
-                  {safeContacts.slice(0, 3).map((c) => (
-                    <li key={c.id} className="py-4 first:pt-0 last:pb-0">
-                      <div className="font-semibold">{c.name}</div>
-                      <div className="text-sm  mt-1">
-                        {c.company || "—"}
-                        {c.email && (
-                          <>
-                            <span className="mx-1.5">•</span>
-                            <span className="text-gray-500">{c.email}</span>
-                          </>
-                        )}
+          <Card>
+            {jobs.length === 0 ? (
+              <Empty text="No jobs yet. Add your first application." />
+            ) : (
+              <ul className="divide-y divide-gray-100">
+                {jobs.slice(0, 3).map((j) => (
+                  <li key={j.id} className="py-4 first:pt-0 last:pb-0">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-semibold truncate">{j.title}</div>
+                        <div className="text-sm  mt-1">{j.company || "—"}</div>
                       </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Card>
-
-            {safeContacts.length === 0 && (
-              <Link
-                className="bg-card inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-primary rounded-lg transition-colors"
-                href="/dashboard/contacts"
-              >
-                Add your first contact →
-              </Link>
+                      <div className="text-sm text-gray-500 whitespace-nowrap">
+                        {new Date(j.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             )}
-          </div>
+          </Card>
+
+          {jobs.length === 0 && (
+            <Link
+              className="bg-card inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-primary rounded-lg transition-colors"
+              href="/dashboard/jobs"
+            >
+              Add your first job →
+            </Link>
+          )}
         </div>
+
+        {/* Recent Contacts */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold">Recent Contacts</h2>
+            <Link
+              className="text-sm font-medium text-primary hover:text-blue-700 transition-colors"
+              href="/dashboard/contacts"
+            >
+              View all →
+            </Link>
+          </div>
+
+          <Card>
+            {safeContacts.length === 0 ? (
+              <Empty text="No contacts yet. Add a recruiter or hiring manager." />
+            ) : (
+              <ul className="divide-y divide-gray-100">
+                {safeContacts.slice(0, 3).map((c) => (
+                  <li key={c.id} className="py-4 first:pt-0 last:pb-0">
+                    <div className="font-semibold">{c.name}</div>
+                    <div className="text-sm  mt-1">
+                      {c.company || "—"}
+                      {c.email && (
+                        <>
+                          <span className="mx-1.5">•</span>
+                          <span className="text-gray-500">{c.email}</span>
+                        </>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+
+          {safeContacts.length === 0 && (
+            <Link
+              className="bg-card inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-primary rounded-lg transition-colors"
+              href="/dashboard/contacts"
+            >
+              Add your first contact →
+            </Link>
+          )}
+        </div>
+      </div>
     </main>
   );
 }

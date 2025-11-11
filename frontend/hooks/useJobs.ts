@@ -11,6 +11,9 @@ export interface Job {
   status: 'SAVED' | 'APPLIED' | 'SCREEN' | 'INTERVIEWING' | 'OFFER' | 'WITHDRAWN' | 'GHOSTED' | 'REJECTED';
   createdAt: string;
   reminders?: JobReminder[];
+  _count?: {
+    reminders: number;
+  };
 }
 
 export interface JobReminder {
@@ -187,6 +190,8 @@ export const useCreateReminder = () => {
       queryClient.invalidateQueries({ queryKey: jobKeys.detail(jobId) });
       queryClient.invalidateQueries({ queryKey: [...jobKeys.detail(jobId), 'reminders'] });
       queryClient.invalidateQueries({ queryKey: jobKeys.upcomingReminders() });
+      // IMPORTANT: Invalidate job lists so reminder counts update in job cards
+      queryClient.invalidateQueries({ queryKey: jobKeys.lists() });
     },
   });
 };
@@ -213,6 +218,8 @@ export const useUpdateReminder = () => {
       queryClient.invalidateQueries({ queryKey: jobKeys.detail(jobId) });
       queryClient.invalidateQueries({ queryKey: [...jobKeys.detail(jobId), 'reminders'] });
       queryClient.invalidateQueries({ queryKey: jobKeys.upcomingReminders() });
+      // IMPORTANT: Invalidate job lists so reminder counts update in job cards
+      queryClient.invalidateQueries({ queryKey: jobKeys.lists() });
     },
   });
 };
@@ -228,6 +235,8 @@ export const useDeleteReminder = () => {
       queryClient.invalidateQueries({ queryKey: jobKeys.detail(jobId) });
       queryClient.invalidateQueries({ queryKey: [...jobKeys.detail(jobId), 'reminders'] });
       queryClient.invalidateQueries({ queryKey: jobKeys.upcomingReminders() });
+      // IMPORTANT: Invalidate job lists so reminder counts update in job cards
+      queryClient.invalidateQueries({ queryKey: jobKeys.lists() });
     },
   });
 };

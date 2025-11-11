@@ -80,12 +80,7 @@ export default function AddJobModal({ isOpen, onClose }: Props) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            {/* Backdrop */}
-            <div
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-                onClick={handleClose}
-            />
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
 
             {/* Modal Content */}
             <div className="relative bg-card rounded-lg p-6 w-full max-w-md mx-4 shadow-xl border border-border">
@@ -170,7 +165,7 @@ export default function AddJobModal({ isOpen, onClose }: Props) {
                                 id="job-status"
                                 value={status}
                                 onChange={(e) => setStatus(e.target.value as any)}
-                                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card"
                             >
                                 <option value="SAVED">Saved</option>
                                 <option value="APPLIED">Applied</option>
@@ -190,7 +185,7 @@ export default function AddJobModal({ isOpen, onClose }: Props) {
                                 id="job-type"
                                 value={jobType || ""}
                                 onChange={(e) => setJobType(e.target.value as CreateJobData["jobType"] || null)}
-                                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card"
                             >
                                 <option value="">Select Job Type</option>
                                 <option value="FULL_TIME">Full-time</option>
