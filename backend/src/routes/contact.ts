@@ -9,9 +9,12 @@ contactRouter.get("/", requireAuth, async (req, res) => {
   const { sub: userId } = (req as any).user as { sub: string };
   const take = Math.min(Number(req.query.limit) || 20, 100);
   const cursor = req.query.cursor as string | undefined;
-  const status = req.query.status as string | undefined;
+  const statusParam = req.query.status as string | undefined;
 
-  const where = { userId, ...(status ? { status } : {}) };
+  const validStatuses = ["REACHED_OUT", "IN_CONTACT", "NOT_INTERESTED", "INTERESTED", "FOLLOW_UP"];
+  const isValidStatus = statusParam && validStatuses.includes(statusParam);
+
+  const where: any = { userId, ...(isValidStatus ? { status: statusParam } : {}) };
 
   const contacts = await prisma.contact.findMany({
     where,
@@ -57,7 +60,7 @@ contactRouter.post("/", requireAuth, async (req, res) => {
     const { name, company, status, linkedin, phone, email } = req.body as {
       name: string;
       company?: string;
-      status?: "SAVED" | "APPLIED" | "INTERVIEWING" | "OFFER" | "REJECTED";
+      status?: "REACHED_OUT" | "IN_CONTACT" | "NOT_INTERESTED" | "INTERESTED" | "FOLLOW_UP";
       linkedin?: string;
       phone?: string;
       email?: string;
@@ -69,7 +72,7 @@ contactRouter.post("/", requireAuth, async (req, res) => {
       data: {
         name: name,
         company: company ?? null,
-        status: status ?? "SAVED",
+        status: status ?? "REACHED_OUT",
         linkedin: linkedin ?? null,
         phone: phone ?? null,
         email: email ?? null, 

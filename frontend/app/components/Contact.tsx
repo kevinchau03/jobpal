@@ -5,10 +5,10 @@ import { Contact } from "@/hooks/useContacts";
 
 const statusColors: Record<string, string> = {
   REACHED_OUT: "bg-blue-100 text-blue-700",
-  IN_CONTACT: "bg-purple-100 text-purple-700",
+  IN_CONTACT: "bg-yellow-100 text-yellow-700",
   NOT_INTERESTED: "bg-gray-100 text-gray-700",
   INTERESTED: "bg-green-100 text-green-700",
-  FOLLOW_UP: "bg-yellow-100 text-yellow-700",
+  FOLLOW_UP: "bg-purple-100 text-purple-700",
   default: "bg-gray-100 text-gray-700",
 };
 
@@ -77,16 +77,16 @@ export default function ContactComponent({ contact, onEdit, onDelete }: ContactC
         </div>
 
         {/* Right actions */}
-        <div className="flex gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <button
+            className="text-sm font-medium hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-md transition-colors hover:cursor-pointer"
             onClick={() => onEdit(contact.id)}
-            className="px-3 py-1 text-xs font-medium bg-blue-500 text-white rounded-sm hover:bg-blue-600 transition-colors hover:cursor-pointer"
           >
             Edit
           </button>
           <button
+            className="text-sm font-medium hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-md transition-colors hover:cursor-pointer"
             onClick={() => onDelete(contact.id)}
-            className="px-3 py-1 text-xs font-medium bg-red-500 text-white rounded-sm hover:bg-red-600 transition-colors hover:cursor-pointer"
           >
             Delete
           </button>

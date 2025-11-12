@@ -91,6 +91,9 @@ export default function ContactsPage() {
           <div className="rounded-sm bg-card px-4 py-2 ml-4 text-yellow-400 border border-yellow-400">
             <span>{contacts.filter(contact => contact.status === "REACHED_OUT").length} Reached Out</span>
           </div>
+          <div className="rounded-sm bg-card px-4 py-2 ml-4 text-purple-400 border border-purple-400">
+            <span>{contacts.filter(contact => contact.status === "FOLLOW_UP").length} Follow Up</span>
+          </div>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
