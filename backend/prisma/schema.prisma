@@ -15,9 +15,11 @@ datasource db {
 }
 
 enum CONTACT_STATUS {
-  ACTIVE
-  INACTIVE
-  PENDING
+  REACHED_OUT
+  IN_CONTACT
+  NOT_INTERESTED
+  INTERESTED
+  FOLLOW_UP
 }
 
 enum JOB_TYPE {
@@ -89,7 +91,7 @@ model Contact {
   phone     String?
   linkedin  String?
   company   String
-  status    CONTACT_STATUS @default(ACTIVE)
+  status    CONTACT_STATUS @default(REACHED_OUT)
   userId    String
   user      User           @relation(fields: [userId], references: [id])
   createdAt DateTime       @default(now())

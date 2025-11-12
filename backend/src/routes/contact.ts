@@ -9,9 +9,12 @@ contactRouter.get("/", requireAuth, async (req, res) => {
   const { sub: userId } = (req as any).user as { sub: string };
   const take = Math.min(Number(req.query.limit) || 20, 100);
   const cursor = req.query.cursor as string | undefined;
-  const status = req.query.status as string | undefined;
+  const statusParam = req.query.status as string | undefined;
 
-  const where = { userId, ...(status ? { status } : {}) };
+  const validStatuses = ["REACHED_OUT", "IN_CONTACT", "NOT_INTERESTED", "INTERESTED", "FOLLOW_UP"];
+  const isValidStatus = statusParam && validStatuses.includes(statusParam);
+
+  const where: any = { userId, ...(isValidStatus ? { status: statusParam } : {}) };
 
   const contacts = await prisma.contact.findMany({
     where,
@@ -57,7 +60,7 @@ contactRouter.post("/", requireAuth, async (req, res) => {
     const { name, company, status, linkedin, phone, email } = req.body as {
       name: string;
       company?: string;
-      status?: "SAVED" | "APPLIED" | "INTERVIEWING" | "OFFER" | "REJECTED";
+      status?: "REACHED_OUT" | "IN_CONTACT" | "NOT_INTERESTED" | "INTERESTED" | "FOLLOW_UP";
       linkedin?: string;
       phone?: string;
       email?: string;
@@ -69,7 +72,7 @@ contactRouter.post("/", requireAuth, async (req, res) => {
       data: {
         name: name,
         company: company ?? null,
-        status: status ?? "SAVED",
+        status: status ?? "REACHED_OUT",
         linkedin: linkedin ?? null,
         phone: phone ?? null,
         email: email ?? null, 
@@ -84,3 +87,61 @@ contactRouter.post("/", requireAuth, async (req, res) => {
     res.status(500).json({ message: "Could not create contact" });
   }
 });
+
+contactRouter.delete("/:id", requireAuth, async (req, res) => {
+  try{
+    const { sub: userId } = (req as any).user as { sub: string };
+    const contactId = req.params.id;
+
+    const contact = await prisma.contact.findFirst({ where: { id: contactId, userId } });
+    if (!contact) {
+      return res.status(404).json({ message: "Contact not found" });
+    }
+
+    await prisma.contact.delete({where:{ id: contactId }});
+    res.status(204).end();
+  } catch(e){
+    console.error(e);
+    res.status(500).json({ message: "Could not delete contact" });
+  }
+  
+});
+
+contactRouter.put("/:id", requireAuth, async (req, res) => {
+  try {
+    const { sub: userId } = (req as any).user as { sub: string };
+    const contactId = req.params.id;
+    const { name, company, status, linkedin, phone, email } = req.body as {
+      name?: string;
+      company?: string;
+      status?: "REACHED_OUT" | "IN_CONTACT" | "NOT_INTERESTED" | "INTERESTED" | "FOLLOW_UP";
+      linkedin?: string;
+      phone?: string;
+      email?: string;
+    };
+    const contact = await prisma.contact.findUnique({ where: { id: contactId } });
+
+    if (!contact || contact.userId !== userId) {
+      return res.status(404).json({ message: "Contact not found" });
+    }
+
+    const updatedContact = await prisma.contact.update({
+      where: { id: contactId },
+      data: {
+        name: name ?? contact.name,
+        company: company ?? contact.company,
+        status: status ?? contact.status,
+        linkedin: linkedin ?? contact.linkedin,
+        phone: phone ?? contact.phone,
+        email: email ?? contact.email,
+      },
+      select: { id: true, name: true, company: true, status: true, createdAt: true },
+    });
+    res.json(updatedContact);
+
+  }
+  catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Could not update contact" });
+  }
+  });
