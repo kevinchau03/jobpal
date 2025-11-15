@@ -34,7 +34,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="flex h-screen">
-      <Sidebar userName={user?.name} />
+      <Sidebar userName={user?.name} exp={user?.exp ?? 0} />
       <div className="flex-1 overflow-auto">{children}</div>
     </div>
   );

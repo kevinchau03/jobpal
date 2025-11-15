@@ -153,6 +153,13 @@ jobRouter.post("/", requireAuth, async (req, res) => {
       },
     });
 
+    // increment user exp by 10 BEFORE responding
+    try {
+      await prisma.user.update({ where: { id: userId }, data: { exp: { increment: 10 } as any } });
+    } catch (e) {
+      console.error('Failed to increment user exp', e);
+    }
+
     console.log("Created job:", job, "for user:", userId);
     res.status(201).json(job);
   } catch (e) {

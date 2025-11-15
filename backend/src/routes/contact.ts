@@ -81,6 +81,13 @@ contactRouter.post("/", requireAuth, async (req, res) => {
       select: { id: true, name: true, company: true, status: true, createdAt: true },
     });
 
+    // increment user exp by 10 BEFORE responding
+    try {
+      await prisma.user.update({ where: { id: userId }, data: { exp: { increment: 10 } as any } });
+    } catch (e) {
+      console.error('Failed to increment user exp', e);
+    }
+
     res.status(201).json(contact);
   } catch (e) {
     console.error(e);
