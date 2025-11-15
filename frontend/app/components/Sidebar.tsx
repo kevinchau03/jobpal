@@ -5,11 +5,27 @@ import { api } from "@/lib/api";
 
 type SidebarProps = {
   userName?: string | null;
+  exp?: number;
 };
 
-export default function Sidebar({ userName }: SidebarProps) {
+export default function Sidebar({ userName, exp = 0 }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
+
+  // Compute level and title from exp
+  const level = Math.floor(exp / 100) + 1;
+  const title = (() => {
+    if (level <= 9) return "Noob";
+    if (level <= 19) return "Crook";
+    if (level <= 29) return "Cooking";
+    if (level <= 39) return "Chicken jockey";
+    if (level < 100) {
+      const tensIndex = Math.floor(level / 10);
+      const x = tensIndex - 3;
+      return `untitled ${x}`;
+    }
+    return "Desperate";
+  })();
 
   const handleSignOut = async () => {
     await api("/api/users/logout", { method: "POST" });
@@ -31,6 +47,9 @@ export default function Sidebar({ userName }: SidebarProps) {
         <div className="p-6 border-b border-gray-800">
           <h2 className="text-lg font-semibold text-primary">jobpal.</h2>
           <p className="text-sm mt-1">{userName ? `Welcome, ${userName}` : "Welcome"}</p>
+          <div className="text-sm mt-1">Level {level} {title}</div>
+           
+   
         </div>
 
         <nav className="flex flex-col p-4 space-y-2">

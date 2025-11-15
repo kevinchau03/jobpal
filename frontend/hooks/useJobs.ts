@@ -134,6 +134,12 @@ export const useCreateJob = () => {
         body: JSON.stringify(data),
       }),
     onSuccess: () => {
+      // Dispatch event for exp bubble animation
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('exp-gained', { detail: { amount: 10 } }));
+      }
+      // Invalidate user so server-side exp is refetched
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: jobKeys.lists() });
       queryClient.invalidateQueries({ queryKey: jobKeys.summary() });

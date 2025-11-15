@@ -62,6 +62,8 @@ export default function AddJobModal({ isOpen, onClose }: Props) {
         setError(null);
 
         try {
+            // Get the position of the modal to use as source for bubble animation
+            const modal = document.querySelector('[data-add-job-modal]');
             await createJobMutation.mutateAsync({
                 title: title.trim(),
                 company: company.trim() || undefined,
@@ -69,6 +71,13 @@ export default function AddJobModal({ isOpen, onClose }: Props) {
                 location: location.trim() || undefined,
                 jobType: jobType || undefined,
             });
+
+            // Dispatch event with source element
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('exp-gained', { 
+                  detail: { sourceElement: modal || undefined } 
+                }));
+              }
 
             resetForm();
             onClose();

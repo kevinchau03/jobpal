@@ -1,0 +1,19 @@
+/*
+  Warnings:
+
+  - The values [ACTIVE,INACTIVE,PENDING] on the enum `CONTACT_STATUS` will be removed. If these variants are still used in the database, this will fail.
+
+*/
+-- AlterEnum
+BEGIN;
+CREATE TYPE "CONTACT_STATUS_new" AS ENUM ('REACHED_OUT', 'IN_CONTACT', 'NOT_INTERESTED', 'INTERESTED', 'FOLLOW_UP');
+ALTER TABLE "public"."Contact" ALTER COLUMN "status" DROP DEFAULT;
+ALTER TABLE "Contact" ALTER COLUMN "status" TYPE "CONTACT_STATUS_new" USING ("status"::text::"CONTACT_STATUS_new");
+ALTER TYPE "CONTACT_STATUS" RENAME TO "CONTACT_STATUS_old";
+ALTER TYPE "CONTACT_STATUS_new" RENAME TO "CONTACT_STATUS";
+DROP TYPE "public"."CONTACT_STATUS_old";
+ALTER TABLE "Contact" ALTER COLUMN "status" SET DEFAULT 'REACHED_OUT';
+COMMIT;
+
+-- AlterTable
+ALTER TABLE "Contact" ALTER COLUMN "status" SET DEFAULT 'REACHED_OUT';

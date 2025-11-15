@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import RemindersWidget from "@/app/components/RemindersWidget";
+import ExpBar from "@/app/components/ExpBar";
 
 type Job = { id: string; title: string; company?: string | null; status: string; createdAt: string };
 type Contact = { id: string; name: string; email?: string | null; company?: string | null; createdAt: string };
@@ -85,8 +86,9 @@ export default function DashboardPage() {
         <KPI label="Total Contacts" value={totalContacts} />
       </div>
 
-      {/* Reminders Widget */}
+      {/* Experience bar and Reminders Widget */}
       <div className="mb-6">
+        <ExpBar />
         <RemindersWidget />
       </div>
 
