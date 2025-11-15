@@ -10,13 +10,13 @@ export interface Job {
   jobType: 'PART_TIME' | 'FULL_TIME' | 'INTERNSHIP' | 'CONTRACT' | null;
   status: 'SAVED' | 'APPLIED' | 'SCREEN' | 'INTERVIEWING' | 'OFFER' | 'WITHDRAWN' | 'GHOSTED' | 'REJECTED';
   createdAt: string;
-  reminders?: JobReminder[];
+  reminders?: Reminder[];
   _count?: {
     reminders: number;
   };
 }
 
-export interface JobReminder {
+export interface Reminder {
   id: string;
   title: string;
   description: string | null;
@@ -50,7 +50,7 @@ export interface CreateJobData {
 export interface CreateReminderData {
   title: string;
   description?: string;
-  type: JobReminder['type'];
+  type: Reminder['type'];
   dueDate: string;
 }
 
@@ -110,15 +110,15 @@ export const useUpcomingReminders = (params?: { limit?: number; days?: number })
 
   return useQuery({
     queryKey: jobKeys.upcomingReminders(params),
-    queryFn: () => api<(JobReminder & { job: { id: string; title: string; company: string | null } })[]>(url),
+    queryFn: () => api<(Reminder & { job: { id: string; title: string; company: string | null } })[]>(url),
     staleTime: 1000 * 60 * 1, // 1 minute
   });
 };
 
-export const useJobReminders = (jobId: string) => {
+export const useReminders = (jobId: string) => {
   return useQuery({
     queryKey: [...jobKeys.detail(jobId), 'reminders'],
-    queryFn: () => api<JobReminder[]>(`/api/jobs/${jobId}/reminders`),
+    queryFn: () => api<Reminder[]>(`/api/jobs/${jobId}/reminders`),
     staleTime: 1000 * 60 * 2, // 2 minutes
   });
 };
@@ -187,7 +187,7 @@ export const useCreateReminder = () => {
 
   return useMutation({
     mutationFn: ({ jobId, data }: { jobId: string; data: CreateReminderData }) =>
-      api<JobReminder>(`/api/jobs/${jobId}/reminders`, {
+      api<Reminder>(`/api/jobs/${jobId}/reminders`, {
         method: 'POST',
         body: JSON.stringify(data),
       }),
@@ -213,9 +213,9 @@ export const useUpdateReminder = () => {
     }: { 
       jobId: string; 
       reminderId: string; 
-      data: Partial<CreateReminderData & { status: JobReminder['status'] }> 
+      data: Partial<CreateReminderData & { status: Reminder['status'] }> 
     }) =>
-      api<JobReminder>(`/api/jobs/${jobId}/reminders/${reminderId}`, {
+      api<Reminder>(`/api/jobs/${jobId}/reminders/${reminderId}`, {
         method: 'PUT',
         body: JSON.stringify(data),
       }),

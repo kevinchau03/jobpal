@@ -243,7 +243,7 @@ jobRouter.get("/:id/reminders", requireAuth, async (req, res) => {
       return res.status(404).json({ message: "Job not found" });
     }
 
-    const reminders = await prisma.jobReminder.findMany({
+    const reminders = await prisma.reminder.findMany({
       where: { jobId },
       orderBy: { dueDate: "asc" },
       select: {
@@ -286,13 +286,14 @@ jobRouter.post("/:id/reminders", requireAuth, async (req, res) => {
       return res.status(404).json({ message: "Job not found" });
     }
 
-    const reminder = await prisma.jobReminder.create({
+    const reminder = await prisma.reminder.create({
       data: {
         title,
         description: description ?? null,
         type,
         dueDate: new Date(dueDate),
         jobId,
+        userId
       },
       select: {
         id: true,
@@ -333,14 +334,14 @@ jobRouter.put("/:jobId/reminders/:reminderId", requireAuth, async (req, res) => 
     }
 
     // Verify reminder exists and belongs to the job
-    const existingReminder = await prisma.jobReminder.findUnique({
+    const existingReminder = await prisma.reminder.findUnique({
       where: { id: reminderId },
     });
     if (!existingReminder || existingReminder.jobId !== jobId) {
       return res.status(404).json({ message: "Reminder not found" });
     }
 
-    const updatedReminder = await prisma.jobReminder.update({
+    const updatedReminder = await prisma.reminder.update({
       where: { id: reminderId },
       data: {
         ...(title !== undefined ? { title } : {}),
@@ -381,14 +382,14 @@ jobRouter.delete("/:jobId/reminders/:reminderId", requireAuth, async (req, res) 
     }
 
     // Verify reminder exists and belongs to the job
-    const existingReminder = await prisma.jobReminder.findUnique({
+    const existingReminder = await prisma.reminder.findUnique({
       where: { id: reminderId },
     });
     if (!existingReminder || existingReminder.jobId !== jobId) {
       return res.status(404).json({ message: "Reminder not found" });
     }
 
-    await prisma.jobReminder.delete({ where: { id: reminderId } });
+    await prisma.reminder.delete({ where: { id: reminderId } });
     res.status(204).end();
   } catch (e) {
     console.error(e);
@@ -406,7 +407,7 @@ jobRouter.get("/reminders/upcoming", requireAuth, async (req, res) => {
     const upcomingDate = new Date();
     upcomingDate.setDate(upcomingDate.getDate() + daysAhead);
 
-    const reminders = await prisma.jobReminder.findMany({
+    const reminders = await prisma.reminder.findMany({
       where: {
         job: { userId },
         status: "PENDING",

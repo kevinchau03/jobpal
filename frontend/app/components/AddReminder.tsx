@@ -5,7 +5,7 @@ import { X, Clock, Calendar, Bell } from "lucide-react";
 import {
   useCreateReminder,
   CreateReminderData,
-  JobReminder,
+  Reminder,
   Job
 } from "@/hooks/useJobs";
 
@@ -121,7 +121,7 @@ export default function AddReminder({ isOpen, onClose, job }: AddReminderProps) 
     setShowTemplates(false);
   };
 
-  const reminderTypes: { value: JobReminder['type']; label: string; icon: string }[] = [
+  const reminderTypes: { value: Reminder['type']; label: string; icon: string }[] = [
     { value: "FOLLOW_UP", label: "Follow Up", icon: "📞" },
     { value: "INTERVIEW", label: "Interview", icon: "🎯" },
     { value: "ASSESSMENT", label: "Assessment", icon: "📝" },
@@ -221,7 +221,7 @@ export default function AddReminder({ isOpen, onClose, job }: AddReminderProps) 
                   </label>
                   <select
                     value={reminderForm.type}
-                    onChange={(e) => setReminderForm(prev => ({ ...prev, type: e.target.value as JobReminder['type'] }))}
+                    onChange={(e) => setReminderForm(prev => ({ ...prev, type: e.target.value as Reminder['type'] }))}
                     className="w-full p-3 border border-border bg-card rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   >

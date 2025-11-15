@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { Check, X, Clock, Edit3, Trash2 } from "lucide-react";
-import { JobReminder, useUpdateReminder, useDeleteReminder } from "@/hooks/useJobs";
+import { Reminder, useUpdateReminder, useDeleteReminder } from "@/hooks/useJobs";
 
 interface ReminderItemProps {
-  reminder: JobReminder;
+  reminder: Reminder;
   jobId: string;
 }
 
-const reminderTypeIcons: Record<JobReminder['type'], string> = {
+const reminderTypeIcons: Record<Reminder['type'], string> = {
   'FOLLOW_UP': '📞',
   'INTERVIEW': '🎯', 
   'ASSESSMENT': '📝',

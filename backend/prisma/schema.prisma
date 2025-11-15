@@ -70,6 +70,7 @@ model User {
   verificationCodeExpires DateTime?
   jobs      Job[]
   contacts  Contact[]
+  reminders Reminder[]
 }
 
 model Job {
@@ -81,7 +82,7 @@ model Job {
   status    JOB_STATUS @default(SAVED)
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  reminders JobReminder[]
+  reminders Reminder[]
   createdAt DateTime @default(now())
 }
 
@@ -95,18 +96,29 @@ model Contact {
   status    CONTACT_STATUS @default(REACHED_OUT)
   userId    String
   user      User           @relation(fields: [userId], references: [id])
+  reminders  Reminder[]      // NEW: reminders related to this contact
   createdAt DateTime       @default(now())
 }
 
-model JobReminder {
-  id          String         @id @default(cuid())
+model Reminder {
+  id          String          @id @default(cuid())
   title       String
   description String?
   type        REMINDER_TYPE
   status      REMINDER_STATUS @default(PENDING)
   dueDate     DateTime
-  jobId       String
-  job         Job            @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+
+  // Owner (user)
+  userId      String
+  user        User            @relation(fields: [userId], references: [id])
+
+  // Optional links
+  jobId       String?
+  job         Job?            @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  contactId   String?
+  contact     Contact?        @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 }
