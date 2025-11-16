@@ -21,7 +21,28 @@ contactRouter.get("/", requireAuth, async (req, res) => {
     orderBy: { createdAt: "desc" },
     take: take + 1,
     ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
-    select: { id: true, name: true, company: true, linkedin: true, phone: true, email: true, status: true, createdAt: true },
+    select: { 
+      id: true, 
+      name: true, 
+      company: true, 
+      linkedin: true, 
+      phone: true, 
+      email: true, 
+      status: true, 
+      reminders: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          dueDate: true,
+          status: true,
+          type: true,
+          createdAt: true,
+          updatedAt: true
+        }, 
+      },
+      createdAt: true 
+    },
   });
 
   const nextCursor = contacts.length > take ? contacts[take].id : null;

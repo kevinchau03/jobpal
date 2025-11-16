@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { Check, X, Clock, Edit3, Trash2 } from "lucide-react";
-import { Reminder, useUpdateReminder, useDeleteReminder } from "@/hooks/useJobs";
+import { Reminder, useUpdateReminder, useDeleteReminder } from "@/hooks/useReminders";
 
 interface ReminderItemProps {
   reminder: Reminder;
-  jobId: string;
+  jobId?: string;
+  contactId?: string;
 }
 
 const reminderTypeIcons: Record<Reminder['type'], string> = {
@@ -19,7 +20,7 @@ const reminderTypeIcons: Record<Reminder['type'], string> = {
   'OTHER': '📌'
 };
 
-export default function ReminderItem({ reminder, jobId }: ReminderItemProps) {
+export default function ReminderItem({ reminder, jobId, contactId }: ReminderItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const updateReminderMutation = useUpdateReminder();
   const deleteReminderMutation = useDeleteReminder();
@@ -30,9 +31,8 @@ export default function ReminderItem({ reminder, jobId }: ReminderItemProps) {
   const handleMarkComplete = async () => {
     try {
       await updateReminderMutation.mutateAsync({
-        jobId,
         reminderId: reminder.id,
-        data: { status: 'COMPLETED' }
+        data: { status: 'COMPLETED' as const }
       });
     } catch (error) {
       console.error("Failed to mark reminder as complete:", error);
@@ -42,9 +42,8 @@ export default function ReminderItem({ reminder, jobId }: ReminderItemProps) {
   const handleMarkPending = async () => {
     try {
       await updateReminderMutation.mutateAsync({
-        jobId,
         reminderId: reminder.id,
-        data: { status: 'PENDING' }
+        data: { status: 'PENDING' as const }
       });
     } catch (error) {
       console.error("Failed to mark reminder as pending:", error);
@@ -54,10 +53,7 @@ export default function ReminderItem({ reminder, jobId }: ReminderItemProps) {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this reminder?')) {
       try {
-        await deleteReminderMutation.mutateAsync({
-          jobId,
-          reminderId: reminder.id
-        });
+        await deleteReminderMutation.mutateAsync(reminder.id);
       } catch (error) {
         console.error("Failed to delete reminder:", error);
       }
@@ -80,7 +76,7 @@ export default function ReminderItem({ reminder, jobId }: ReminderItemProps) {
   };
 
   return (
-    <div className="border rounded-sm transition-all">
+    <div className="rounded-sm transition-all">
       <div className="p-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">

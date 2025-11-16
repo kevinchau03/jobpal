@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import type { Reminder } from './useReminders';
 
 // Types
 export interface Job {
@@ -14,17 +15,6 @@ export interface Job {
   _count?: {
     reminders: number;
   };
-}
-
-export interface Reminder {
-  id: string;
-  title: string;
-  description: string | null;
-  type: 'FOLLOW_UP' | 'INTERVIEW' | 'ASSESSMENT' | 'DEADLINE' | 'CALL' | 'EMAIL' | 'OTHER';
-  status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
-  dueDate: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface JobSummary {
@@ -47,12 +37,8 @@ export interface CreateJobData {
   status?: Job['status'];
 }
 
-export interface CreateReminderData {
-  title: string;
-  description?: string;
-  type: Reminder['type'];
-  dueDate: string;
-}
+// Re-export types from useReminders for backward compatibility
+export type { Reminder, CreateReminderData } from './useReminders';
 
 // Query Keys
 export const jobKeys = {
@@ -62,9 +48,6 @@ export const jobKeys = {
   details: () => [...jobKeys.all, 'detail'] as const,
   detail: (id: string) => [...jobKeys.details(), id] as const,
   summary: () => [...jobKeys.all, 'summary'] as const,
-  reminders: () => [...jobKeys.all, 'reminders'] as const,
-  upcomingReminders: (params?: { limit?: number; days?: number }) => 
-    [...jobKeys.reminders(), 'upcoming', params] as const,
 };
 
 // Hooks
@@ -97,29 +80,6 @@ export const useJobSummary = () => {
     queryKey: jobKeys.summary(),
     queryFn: () => api<JobSummary>('/api/jobs/summary'),
     staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-};
-
-export const useUpcomingReminders = (params?: { limit?: number; days?: number }) => {
-  const queryParams = new URLSearchParams();
-  if (params?.limit) queryParams.set('limit', params.limit.toString());
-  if (params?.days) queryParams.set('days', params.days.toString());
-  
-  const queryString = queryParams.toString();
-  const url = `/api/jobs/reminders/upcoming${queryString ? `?${queryString}` : ''}`;
-
-  return useQuery({
-    queryKey: jobKeys.upcomingReminders(params),
-    queryFn: () => api<(Reminder & { job: { id: string; title: string; company: string | null } })[]>(url),
-    staleTime: 1000 * 60 * 1, // 1 minute
-  });
-};
-
-export const useReminders = (jobId: string) => {
-  return useQuery({
-    queryKey: [...jobKeys.detail(jobId), 'reminders'],
-    queryFn: () => api<Reminder[]>(`/api/jobs/${jobId}/reminders`),
-    staleTime: 1000 * 60 * 2, // 2 minutes
   });
 };
 
@@ -182,67 +142,13 @@ export const useDeleteJob = () => {
   });
 };
 
-export const useCreateReminder = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ jobId, data }: { jobId: string; data: CreateReminderData }) =>
-      api<Reminder>(`/api/jobs/${jobId}/reminders`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      }),
-    onSuccess: (_, { jobId }) => {
-      // Invalidate job details and reminders
-      queryClient.invalidateQueries({ queryKey: jobKeys.detail(jobId) });
-      queryClient.invalidateQueries({ queryKey: [...jobKeys.detail(jobId), 'reminders'] });
-      queryClient.invalidateQueries({ queryKey: jobKeys.upcomingReminders() });
-      // IMPORTANT: Invalidate job lists so reminder counts update in job cards
-      queryClient.invalidateQueries({ queryKey: jobKeys.lists() });
-    },
-  });
-};
-
-export const useUpdateReminder = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ 
-      jobId, 
-      reminderId, 
-      data 
-    }: { 
-      jobId: string; 
-      reminderId: string; 
-      data: Partial<CreateReminderData & { status: Reminder['status'] }> 
-    }) =>
-      api<Reminder>(`/api/jobs/${jobId}/reminders/${reminderId}`, {
-        method: 'PUT',
-        body: JSON.stringify(data),
-      }),
-    onSuccess: (_, { jobId }) => {
-      // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: jobKeys.detail(jobId) });
-      queryClient.invalidateQueries({ queryKey: [...jobKeys.detail(jobId), 'reminders'] });
-      queryClient.invalidateQueries({ queryKey: jobKeys.upcomingReminders() });
-      // IMPORTANT: Invalidate job lists so reminder counts update in job cards
-      queryClient.invalidateQueries({ queryKey: jobKeys.lists() });
-    },
-  });
-};
-
-export const useDeleteReminder = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ jobId, reminderId }: { jobId: string; reminderId: string }) =>
-      api(`/api/jobs/${jobId}/reminders/${reminderId}`, { method: 'DELETE' }),
-    onSuccess: (_, { jobId }) => {
-      // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: jobKeys.detail(jobId) });
-      queryClient.invalidateQueries({ queryKey: [...jobKeys.detail(jobId), 'reminders'] });
-      queryClient.invalidateQueries({ queryKey: jobKeys.upcomingReminders() });
-      // IMPORTANT: Invalidate job lists so reminder counts update in job cards
-      queryClient.invalidateQueries({ queryKey: jobKeys.lists() });
-    },
-  });
-};
+// Re-export reminder hooks from useReminders for backward compatibility
+export {
+  useReminders,
+  useRemindersByJob,
+  useRemindersByContact,
+  useUpcomingReminders,
+  useCreateReminder,
+  useUpdateReminder,
+  useDeleteReminder,
+} from './useReminders';

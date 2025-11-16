@@ -122,11 +122,11 @@ export default function UpcomingReminders() {
                     {overdueReminders.map((reminder) => (
                       <div key={reminder.id} className="space-y-1">
                         <div className="text-xs px-4">
-                          {reminder.job.title} {reminder.job.company && `· ${reminder.job.company}`}
+                          {reminder.title}
                         </div>
                         <ReminderItem 
                           reminder={reminder}
-                          jobId={reminder.job.id}
+                          jobId={reminder.id}
                         />
                       </div>
                     ))}
@@ -147,11 +147,11 @@ export default function UpcomingReminders() {
                     {todayReminders.map((reminder) => (
                       <div key={reminder.id} className="space-y-1">
                         <div className="text-xs px-4">
-                          {reminder.job.title} {reminder.job.company && `· ${reminder.job.company}`}
+                          {reminder.title}
                         </div>
                         <ReminderItem 
                           reminder={reminder}
-                          jobId={reminder.job.id}
+                          jobId={reminder.id}
                         />
                       </div>
                     ))}
@@ -174,11 +174,11 @@ export default function UpcomingReminders() {
                       .map((reminder) => (
                         <div key={reminder.id} className="space-y-1">
                           <div className="text-xs px-4">
-                            {reminder.job.title} {reminder.job.company && `· ${reminder.job.company}`}
+                            {reminder.title}
                           </div>
                           <ReminderItem 
                             reminder={reminder}
-                            jobId={reminder.job.id}
+                            jobId={reminder.id}
                           />
                         </div>
                       ))
@@ -200,11 +200,11 @@ export default function UpcomingReminders() {
                     {completedReminders.map((reminder) => (
                       <div key={reminder.id} className="space-y-1">
                         <div className="text-xs px-4">
-                          {reminder.job.title} {reminder.job.company && `· ${reminder.job.company}`}
+                          {reminder.title}
                         </div>
                         <ReminderItem 
                           reminder={reminder}
-                          jobId={reminder.job.id}
+                          jobId={reminder.id}
                         />
                       </div>
                     ))}

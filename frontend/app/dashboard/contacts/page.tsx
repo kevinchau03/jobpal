@@ -122,6 +122,7 @@ export default function ContactsPage() {
         </div>
       )}
 
+
       {/* Add Contact Modal */}
       <AddContactModal
         isOpen={showAddModal}

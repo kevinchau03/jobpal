@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Briefcase, Building2, Calendar, Pin, Timer, Plus } from "lucide-react";
-import { Job } from "@/hooks/useJobs";
+import { Job, useReminders } from "@/hooks/useJobs";
 import AddReminder from "./AddReminder";
 import ReminderItem from "./ReminderItem";
 

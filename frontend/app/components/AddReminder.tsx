@@ -8,9 +8,10 @@ import {
   Reminder,
   Job
 } from "@/hooks/useJobs";
+import { Contact } from "@/hooks/useContacts";
 
 // Smart reminder templates based on job status
-const getReminderTemplates = (status: Job['status']): Partial<CreateReminderData>[] => {
+const getJobReminderTemplates = (status: Job['status']): Partial<CreateReminderData>[] => {
   const baseDate = new Date();
   
   switch (status) {
@@ -67,13 +68,75 @@ const getReminderTemplates = (status: Job['status']): Partial<CreateReminderData
   }
 };
 
+// Smart reminder templates based on contact status
+const getContactReminderTemplates = (status: Contact['status']): Partial<CreateReminderData>[] => {
+  const baseDate = new Date();
+  
+  switch (status) {
+    case 'REACHED_OUT':
+      return [
+        {
+          title: "Follow up on initial contact",
+          type: "FOLLOW_UP",
+          dueDate: new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 1 week
+        }
+      ];
+    case 'IN_CONTACT':
+      return [
+        {
+          title: "Schedule coffee chat",
+          type: "CALL",
+          dueDate: new Date(baseDate.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 3 days
+        },
+        {
+          title: "Send LinkedIn connection request",
+          type: "OTHER",
+          dueDate: new Date(baseDate.getTime() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // tomorrow
+        }
+      ];
+    case 'INTERESTED':
+      return [
+        {
+          title: "Set up informational interview",
+          type: "INTERVIEW",
+          dueDate: new Date(baseDate.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 2 days
+        }
+      ];
+    case 'FOLLOW_UP':
+      return [
+        {
+          title: "Follow up conversation",
+          type: "FOLLOW_UP",
+          dueDate: new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 1 week
+        }
+      ];
+    default:
+      return [
+        {
+          title: "Reach out to contact",
+          type: "CALL",
+          dueDate: new Date(baseDate.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 3 days
+        }
+      ];
+  }
+};
+
 interface AddReminderProps {
   isOpen: boolean;
   onClose: () => void;
-  job: Job;
+  job?: Job;
+  contact?: Contact;
 }
 
-export default function AddReminder({ isOpen, onClose, job }: AddReminderProps) {
+export default function AddReminder({ isOpen, onClose, job, contact }: AddReminderProps) {
+  // Validation: ensure either job or contact is provided, but not both
+  if (job && contact) {
+    console.warn('AddReminder: Both job and contact provided. Using job.');
+  }
+  if (!job && !contact) {
+    console.warn('AddReminder: Neither job nor contact provided.');
+  }
+
   const [reminderForm, setReminderForm] = useState<CreateReminderData>({
     title: "",
     description: "",
@@ -84,7 +147,19 @@ export default function AddReminder({ isOpen, onClose, job }: AddReminderProps) 
   const [showTemplates, setShowTemplates] = useState(true);
   const createReminderMutation = useCreateReminder();
 
-  const templates = getReminderTemplates(job.status);
+  // Get appropriate templates based on entity type
+  const templates = job 
+    ? getJobReminderTemplates(job.status)
+    : contact 
+    ? getContactReminderTemplates(contact.status)
+    : [];
+
+  // Get entity info for display
+  const entityInfo = job 
+    ? { name: job.title, company: job.company }
+    : contact 
+    ? { name: contact.name, company: contact.company }
+    : { name: '', company: null };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,8 +170,9 @@ export default function AddReminder({ isOpen, onClose, job }: AddReminderProps) 
 
     try {
       await createReminderMutation.mutateAsync({
-        jobId: job.id,
-        data: reminderForm
+        ...reminderForm,
+        jobId: job?.id,
+        contactId: contact?.id
       });
       
       // Reset form and close
@@ -141,7 +217,7 @@ export default function AddReminder({ isOpen, onClose, job }: AddReminderProps) 
           <div>
             <h2 className="text-xl font-semibold">Add Reminder</h2>
             <p className="text-sm mt-1">
-              For: {job.title} {job.company && `at ${job.company}`}
+              For: {entityInfo.name} {entityInfo.company && `at ${entityInfo.company}`}
             </p>
           </div>
           <button
@@ -158,7 +234,9 @@ export default function AddReminder({ isOpen, onClose, job }: AddReminderProps) 
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-3">
                 <Bell className="w-4 h-4 text-blue-600" />
-                <h3 className="font-medium text-sm">Quick Suggestions</h3>
+                <h3 className="font-medium text-sm">
+                  {job ? 'Job-specific suggestions' : contact ? 'Contact suggestions' : 'Quick suggestions'}
+                </h3>
               </div>
               <div className="space-y-2">
                 {templates.map((template, index) => (

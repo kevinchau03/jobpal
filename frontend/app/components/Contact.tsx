@@ -1,7 +1,11 @@
 "use client";
 
-import { Building2, Calendar, Phone, Mail } from "lucide-react";
+import { useState } from "react";
+import { Building2, Calendar, Phone, Mail, Timer, Plus } from "lucide-react";
 import { Contact } from "@/hooks/useContacts";
+import { useRemindersByContact, useDeleteReminder } from "@/hooks/useReminders";
+import AddReminder from "./AddReminder";
+import ReminderItem from "./ReminderItem";
 
 const statusColors: Record<string, string> = {
   REACHED_OUT: "bg-yellow-100 text-yellow-700",
@@ -13,17 +17,39 @@ const statusColors: Record<string, string> = {
 };
 
 interface ContactComponentProps {
-  readonly contact: Contact;
-  readonly onEdit: (contactId: string) => void;
-  readonly onDelete: (contactId: string) => void;
+ contact: Contact;
+ onEdit: (contactId: string) => void;
+ onDelete: (contactId: string) => void;
 }
 
 export default function ContactComponent({ contact, onEdit, onDelete }: ContactComponentProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showAddReminder, setShowAddReminder] = useState(false);
+  
+  // Fetch reminders for this contact using the centralized hook
+  const { data: reminders = [] } = useRemindersByContact(contact.id);
+  const deleteReminder = useDeleteReminder();
+  
   const key = (contact.status || "default").toUpperCase();
   const badge = statusColors[key] || statusColors.default;
 
+  console.log("Contact details:", contact);
+  console.log("Contact reminders:", reminders);
+
+  // Use fetched reminders instead of contact.reminders
+  const hasReminders = reminders.length > 0;
+  
+  // Calculate reminder statistics
+  const pendingReminders = reminders.filter(r => r.status === 'PENDING');
+  const overdueReminders = pendingReminders.filter(r => new Date(r.dueDate) < new Date());
+  const todayReminders = pendingReminders.filter(r => 
+    new Date(r.dueDate).toDateString() === new Date().toDateString()
+  );
+
   return (
-    <div className={`bg-card border border-border rounded-sm shadow-sm p-3 transition-all hover:border-border hover:shadow-md`}>
+    <div className={`bg-card border border-border rounded-sm shadow-sm p-3 transition-all hover:border-border ${
+      isExpanded && reminders?.length ? 'shadow-lg' : 'hover:shadow-md'
+    }`}>
       <div className="flex items-center justify-between gap-6">
         {/* Left content */}
         <div className="flex-1 min-w-0">
@@ -73,11 +99,43 @@ export default function ContactComponent({ contact, onEdit, onDelete }: ContactC
                 <span>{contact.linkedin}</span>
               </div>
             )}
+            
+          {hasReminders && (
+              <button 
+                onClick={() => setIsExpanded(!isExpanded)}
+                className={`flex items-center gap-2 px-2 py-1 rounded-sm transition-colors hover:cursor-pointer ${
+                  overdueReminders.length > 0 
+                    ? 'text-red-600 hover:bg-red-50' 
+                    : todayReminders.length > 0
+                    ? 'text-yellow-600 hover:bg-yellow-50'
+                    : 'text-blue-600 hover:bg-blue-50'
+                }`}
+              >
+                <Timer className="w-4 h-4 flex-shrink-0" />
+                <span>
+                  {pendingReminders.length > 0 
+                    ? `${pendingReminders.length} pending`
+                    : `${reminders.length} reminder${reminders.length > 1 ? 's' : ''}`
+                  }
+                  {overdueReminders.length > 0 && ` (${overdueReminders.length} overdue)`}
+                  {todayReminders.length > 0 && !overdueReminders.length && ` (${todayReminders.length} today)`}
+                </span>
+                <span className="text-xs">{isExpanded ? '▲' : '▼'}</span>
+              </button>
+            )}
           </div>
         </div>
 
         {/* Right actions */}
         <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            onClick={() => setShowAddReminder(true)}
+            className="flex items-center gap-1 text-sm font-medium hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-md transition-colors hover:cursor-pointer"
+            title="Add reminder"
+          >
+            <Plus className="w-4 h-4" />
+            Reminder
+          </button>
           <button
             className="text-sm font-medium hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-md transition-colors hover:cursor-pointer"
             onClick={() => onEdit(contact.id)}
@@ -92,6 +150,39 @@ export default function ContactComponent({ contact, onEdit, onDelete }: ContactC
           </button>
         </div>
       </div>
+
+      {/* Expanded reminders section */}
+      {isExpanded && hasReminders && (
+        <div className="mt-4 pt-3 border-t border-border">
+          <div className="flex items-center gap-2 mb-3 text-sm font-medium">
+            <Timer className="w-4 h-4" />
+            <span>Reminders Details</span>
+          </div>
+          
+          {reminders && reminders.length > 0 ? (
+            <div className="space-y-3">
+              {reminders.map((reminder) => (
+                <ReminderItem 
+                  key={reminder.id}
+                  reminder={reminder}
+                  contactId={contact.id}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground py-3 text-center bg-gray-50 rounded-md">
+              No reminders found
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Add Reminder Modal */}
+      <AddReminder 
+        isOpen={showAddReminder}
+        onClose={() => setShowAddReminder(false)}
+        contact={contact}
+      />
     </div>
   );
 }

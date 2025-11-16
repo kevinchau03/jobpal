@@ -88,8 +88,7 @@ export default function RemindersWidget() {
                       {reminder.title}
                     </div>
                     <div className="text-xs ">
-                      {reminder.job.title}
-                      {reminder.job.company && ` at ${reminder.job.company}`}
+                      {reminder.title}
                     </div>
                     <div className={`text-xs mt-1 ${
                       isOverdue ? 'text-red-600' : 

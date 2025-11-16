@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import { userRouter } from "./routes/user";
 import { jobRouter } from "./routes/job";
 import { contactRouter } from "./routes/contact";
+import { reminderRouter } from "./routes/reminder";
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(
 app.use("/api/users", userRouter);
 app.use("/api/jobs", jobRouter);
 app.use("/api/contacts", contactRouter);
+app.use("/api/reminders", reminderRouter);
 
 // Health check
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
