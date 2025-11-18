@@ -16,7 +16,7 @@ function VerificationContent() {
     const searchParams = useSearchParams();
 
     // Redirect to dashboard if already logged in
-    const { isLoading: authLoading, refetch } = useAuthRedirect('/dashboard');
+    const { isLoading: authLoading, isAuthenticated } = useAuthRedirect('/dashboard');
 
     useEffect(() => {
         const emailParam = searchParams.get('email');
@@ -48,16 +48,13 @@ function VerificationContent() {
         setError('');
 
         try {
-            const payload = await api<{ token?: string }>('/api/users/verify-email', {
+            await api('/api/users/verify-email', {
                 method: 'POST',
                 body: JSON.stringify({ email, code }),
             });
 
-            if (payload.token) {
-                localStorage.setItem('token', payload.token);
-                // Refresh auth state before redirecting
-                await refetch();
-            }
+            // After successful verification, redirect to dashboard
+            // The server will have set the authentication cookie
             router.push('/dashboard');
         } catch (err: unknown) {
             const error = err as Error;

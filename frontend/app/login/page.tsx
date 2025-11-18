@@ -32,20 +32,18 @@ export default function LoginPage() {
         setError(null);
 
         try {
-            const payload = await api<{ token?: string; message?: string }>('/api/users/login', {
+            const payload = await api<{ message?: string }>('/api/users/login', {
                 method: 'POST',
                 body: JSON.stringify({ email, password }),
             });
 
             if (payload?.message === "Please verify your email before logging in") {
-                router.push(`/verify?email=${encodeURIComponent(email)}`);
+                router.push(`/verification?email=${encodeURIComponent(email)}`);
                 return;
             }
 
-            const { token } = payload;
-            if (!token) throw new Error("Login response missing token");
-
-            localStorage.setItem("token", token);
+            // After successful login, redirect to dashboard
+            // The server will have set the authentication cookie
             router.push("/dashboard");
             return;
         } catch (err: unknown) {

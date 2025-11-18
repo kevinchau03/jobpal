@@ -180,15 +180,13 @@ function VerificationForm({ email }: { email: string }) {
         setError('');
 
         try {
-            const payload = await api<{ token?: string }>('/api/users/verify-email', {
+            await api('/api/users/verify-email', {
                 method: 'POST',
                 body: JSON.stringify({ email, code }),
             });
 
-            // Store token if returned and redirect to dashboard
-            if (payload.token) {
-                localStorage.setItem('token', payload.token);
-            }
+            // After successful verification, redirect to dashboard
+            // The server will have set the authentication cookie
             router.push('/dashboard');
         } catch (err: unknown) {
             const error = err as Error;
