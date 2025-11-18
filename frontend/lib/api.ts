@@ -1,6 +1,6 @@
 // lib/api.ts
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const res = await fetch(`http://localhost:4000${path}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",

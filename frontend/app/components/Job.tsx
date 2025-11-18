@@ -157,7 +157,6 @@ export default function JobComponent({ job, onEdit, onDelete }: JobProps) {
                 <ReminderItem 
                   key={reminder.id}
                   reminder={reminder}
-                  jobId={job.id}
                 />
               ))}
             </div>

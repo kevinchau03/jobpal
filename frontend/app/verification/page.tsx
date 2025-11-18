@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthRedirect } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 
-export default function VerifyPage() {
+function VerificationContent() {
     const [code, setCode] = useState('');
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -151,5 +151,26 @@ export default function VerifyPage() {
                 </form>
             </div>
         </div>
+    );
+}
+
+// Loading fallback component
+function VerificationLoading() {
+    return (
+        <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="mt-2 text-gray-600">Loading...</p>
+            </div>
+        </div>
+    );
+}
+
+// Main page component with Suspense boundary
+export default function VerifyPage() {
+    return (
+        <Suspense fallback={<VerificationLoading />}>
+            <VerificationContent />
+        </Suspense>
     );
 }

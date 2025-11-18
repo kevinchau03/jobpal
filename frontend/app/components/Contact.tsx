@@ -32,9 +32,6 @@ export default function ContactComponent({ contact, onEdit, onDelete }: ContactC
   const key = (contact.status || "default").toUpperCase();
   const badge = statusColors[key] || statusColors.default;
 
-  console.log("Contact details:", contact);
-  console.log("Contact reminders:", reminders);
-
   // Use fetched reminders instead of contact.reminders
   const hasReminders = reminders.length > 0;
   
@@ -164,7 +161,6 @@ export default function ContactComponent({ contact, onEdit, onDelete }: ContactC
                 <ReminderItem 
                   key={reminder.id}
                   reminder={reminder}
-                  contactId={contact.id}
                 />
               ))}
             </div>
