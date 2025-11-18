@@ -2,22 +2,28 @@
 import { redirect } from 'next/navigation';
 import Sidebar from "../components/Sidebar";
 import { cookies } from "next/headers";
+import { api } from '@/lib/api';
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  exp: number;
+}
 
 async function getMe() {
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.getAll().map(cookie => `${cookie.name}=${cookie.value}`).join('; ');
 
   try {
-    const res = await fetch("http://localhost:4000/api/users/me", {
+    const user = await api<User>('/api/users/me', {
       headers: {
         cookie: cookieHeader,
-        'Content-Type': 'application/json'
       },
-      cache: "no-store", // always fresh, or use revalidate
+      cache: "no-store",
     });
-    
-    if (!res.ok) return null;
-    return res.json();
+    return user;
   } catch (error) {
     console.error('Failed to fetch user:', error);
     return null;
