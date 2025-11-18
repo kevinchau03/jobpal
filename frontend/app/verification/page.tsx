@@ -16,7 +16,7 @@ function VerificationContent() {
     const searchParams = useSearchParams();
 
     // Redirect to dashboard if already logged in
-    const { isLoading: authLoading } = useAuthRedirect('/dashboard');
+    const { isLoading: authLoading, refetch } = useAuthRedirect('/dashboard');
 
     useEffect(() => {
         const emailParam = searchParams.get('email');
@@ -55,6 +55,8 @@ function VerificationContent() {
 
             if (payload.token) {
                 localStorage.setItem('token', payload.token);
+                // Refresh auth state before redirecting
+                await refetch();
             }
             router.push('/dashboard');
         } catch (err: unknown) {
