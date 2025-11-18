@@ -37,6 +37,13 @@ export interface CreateJobData {
   status?: Job['status'];
 }
 
+// Filter types for job queries
+export interface JobFilters {
+  limit?: number;
+  cursor?: string;
+  status?: string;
+}
+
 // Re-export types from useReminders for backward compatibility
 export type { Reminder, CreateReminderData } from './useReminders';
 
@@ -44,14 +51,14 @@ export type { Reminder, CreateReminderData } from './useReminders';
 export const jobKeys = {
   all: ['jobs'] as const,
   lists: () => [...jobKeys.all, 'list'] as const,
-  list: (filters: Record<string, any>) => [...jobKeys.lists(), { filters }] as const,
+  list: (filters: JobFilters) => [...jobKeys.lists(), { filters }] as const,
   details: () => [...jobKeys.all, 'detail'] as const,
   detail: (id: string) => [...jobKeys.details(), id] as const,
   summary: () => [...jobKeys.all, 'summary'] as const,
 };
 
 // Hooks
-export const useJobs = (params?: { limit?: number; cursor?: string; status?: string }) => {
+export const useJobs = (params?: JobFilters) => {
   const queryParams = new URLSearchParams();
   if (params?.limit) queryParams.set('limit', params.limit.toString());
   if (params?.cursor) queryParams.set('cursor', params.cursor);

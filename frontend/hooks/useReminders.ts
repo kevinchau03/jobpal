@@ -32,11 +32,21 @@ export interface CreateReminderData {
   contactId?: string;
 }
 
+// Filter types for reminder queries
+export interface ReminderFilters {
+  limit?: number;
+  cursor?: string;
+  status?: Reminder['status'];
+  type?: Reminder['type'];
+  jobId?: string;
+  contactId?: string;
+}
+
 // Query Keys
 export const reminderKeys = {
   all: ['reminders'] as const,
   lists: () => [...reminderKeys.all, 'list'] as const,
-  list: (filters: Record<string, any>) => [...reminderKeys.lists(), { filters }] as const,
+  list: (filters: ReminderFilters) => [...reminderKeys.lists(), { filters }] as const,
   details: () => [...reminderKeys.all, 'detail'] as const,
   detail: (id: string) => [...reminderKeys.details(), id] as const,
   upcoming: (params?: { limit?: number; days?: number }) => 
@@ -46,14 +56,7 @@ export const reminderKeys = {
 };
 
 // Hooks
-export const useReminders = (params?: { 
-  limit?: number; 
-  cursor?: string; 
-  status?: Reminder['status'];
-  type?: Reminder['type'];
-  jobId?: string;
-  contactId?: string;
-}) => {
+export const useReminders = (params?: ReminderFilters) => {
   const queryParams = new URLSearchParams();
   if (params?.limit) queryParams.set('limit', params.limit.toString());
   if (params?.cursor) queryParams.set('cursor', params.cursor);
@@ -211,7 +214,7 @@ export const useDeleteReminder = () => {
       queryClient.removeQueries({ queryKey: reminderKeys.detail(reminderId) });
       return { reminderId };
     },
-    onSuccess: (_, reminderId) => {
+    onSuccess: () => {
       // Invalidate all reminder queries
       queryClient.invalidateQueries({ queryKey: reminderKeys.all });
       

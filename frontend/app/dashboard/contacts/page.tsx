@@ -29,8 +29,8 @@ export default function ContactsPage() {
 
     try {
       await deleteContactMutation.mutateAsync(contactId);
-    } catch (e: any) {
-      alert(e.message || "Failed to delete contact");
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : "Failed to delete contact");
     }
   };
 
@@ -131,6 +131,7 @@ export default function ContactsPage() {
 
       {editingContact && (
         <EditContact
+          key={editingContact.id}
           isOpen={!!editingContact}
           onClose={() => setEditingContact(null)}
           contact={editingContact}

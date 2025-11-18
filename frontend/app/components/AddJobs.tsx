@@ -81,8 +81,8 @@ export default function AddJobModal({ isOpen, onClose }: Props) {
 
             resetForm();
             onClose();
-        } catch (e: any) {
-            setError(e.message || "Could not save job");
+        } catch (e: unknown) {
+            setError(e instanceof Error ? e.message : "Could not save job");
         }
     }
 
@@ -173,7 +173,7 @@ export default function AddJobModal({ isOpen, onClose }: Props) {
                             <select
                                 id="job-status"
                                 value={status}
-                                onChange={(e) => setStatus(e.target.value as any)}
+                                onChange={(e) => setStatus(e.target.value as CreateJobData["status"])}
                                 className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card"
                             >
                                 <option value="SAVED">Saved</option>

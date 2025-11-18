@@ -10,6 +10,9 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error((data as any)?.message || `Request failed (${res.status})`);
+  if (!res.ok) {
+    const errorData = data as { message?: string };
+    throw new Error(errorData?.message || `Request failed (${res.status})`);
+  }
   return data as T;
 }

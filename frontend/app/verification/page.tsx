@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthRedirect } from '@/hooks/useAuth';
+import { api } from '@/lib/api';
 
 export default function VerifyPage() {
     const [code, setCode] = useState('');
@@ -47,24 +48,18 @@ export default function VerifyPage() {
         setError('');
 
         try {
-            const res = await fetch("http://localhost:4000/api/users/verify-email", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
+            const payload = await api<{ token?: string }>('/api/users/verify-email', {
+                method: 'POST',
                 body: JSON.stringify({ email, code }),
             });
-
-            const payload = await res.json().catch(() => ({}));
-            if (!res.ok) {
-                throw new Error(payload?.message || 'Verification failed');
-            }
 
             if (payload.token) {
                 localStorage.setItem('token', payload.token);
             }
             router.push('/dashboard');
-        } catch (err: any) {
-            setError(err.message || 'Verification failed');
+        } catch (err: unknown) {
+            const error = err as Error;
+            setError(error.message || 'Verification failed');
         } finally {
             setIsLoading(false);
         }
@@ -80,19 +75,14 @@ export default function VerifyPage() {
         setError('');
 
         try {
-            const res = await fetch("http://localhost:4000/api/users/resend-verification", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+            await api('/api/users/resend-verification', {
+                method: 'POST',
                 body: JSON.stringify({ email }),
             });
 
-            const payload = await res.json().catch(() => ({}));
-            if (!res.ok) {
-                throw new Error(payload?.message || 'Failed to resend code');
-            }
-
-        } catch (err: any) {
-            setError(err.message || 'Failed to resend verification code');
+        } catch (err: unknown) {
+            const error = err as Error;
+            setError(error.message || 'Failed to resend verification code');
         } finally {
             setIsResending(false);
         }

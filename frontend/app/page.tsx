@@ -75,7 +75,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold mb-3">manage contacts</h3>
               <p className="text-foreground/70">
-                keep track of recruiters, hiring managers, and everyone you've connected 
+                keep track of recruiters, hiring managers, and everyone you&apos;ve connected 
                 with along the way.
               </p>
             </div>

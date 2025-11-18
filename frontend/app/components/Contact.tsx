@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Building2, Calendar, Phone, Mail, Timer, Plus } from "lucide-react";
 import { Contact } from "@/hooks/useContacts";
-import { useRemindersByContact, useDeleteReminder } from "@/hooks/useReminders";
+import { useRemindersByContact } from "@/hooks/useReminders";
 import AddReminder from "./AddReminder";
 import ReminderItem from "./ReminderItem";
 
@@ -28,7 +28,6 @@ export default function ContactComponent({ contact, onEdit, onDelete }: ContactC
   
   // Fetch reminders for this contact using the centralized hook
   const { data: reminders = [] } = useRemindersByContact(contact.id);
-  const deleteReminder = useDeleteReminder();
   
   const key = (contact.status || "default").toUpperCase();
   const badge = statusColors[key] || statusColors.default;

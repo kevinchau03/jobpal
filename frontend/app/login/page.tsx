@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthRedirect } from '@/hooks/useAuth';
+import { api } from '@/lib/api';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -31,31 +32,25 @@ export default function LoginPage() {
         setError(null);
 
         try {
-            const res = await fetch("http://localhost:4000/api/users/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+            const payload = await api<{ token?: string; message?: string }>('/api/users/login', {
+                method: 'POST',
                 body: JSON.stringify({ email, password }),
-                credentials: "include",
             });
-
-            const payload = await res.json().catch(() => ({}));
-            if (!res.ok) {
-                throw new Error(payload?.message || `Login failed (HTTP ${res.status})`);
-            }
 
             if (payload?.message === "Please verify your email before logging in") {
                 router.push(`/verify?email=${encodeURIComponent(email)}`);
                 return;
             }
 
-            const { token, user } = payload as { token: string; user: any };
+            const { token } = payload;
             if (!token) throw new Error("Login response missing token");
 
             localStorage.setItem("token", token);
             router.push("/dashboard");
             return;
-        } catch (err: any) {
-            setError(err.message || "Login failed");
+        } catch (err: unknown) {
+            const error = err as Error;
+            setError(error.message || "Login failed");
         } finally {
             setIsLoading(false);
         }
@@ -119,7 +114,7 @@ export default function LoginPage() {
                     </div>
                     <div className="text-center">
                         <a href="/signup" className="text-secondary hover:text-secondary">
-                            Don't have an account? Sign up
+                            Don&apos;t have an account? Sign up
                         </a>
                     </div>
                 </form>

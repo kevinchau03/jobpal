@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, Clock, Edit3, Trash2 } from "lucide-react";
+import { Check, Clock, Trash2 } from "lucide-react";
 import { Reminder, useUpdateReminder, useDeleteReminder } from "@/hooks/useReminders";
 
 interface ReminderItemProps {
   reminder: Reminder;
-  jobId?: string;
-  contactId?: string;
 }
 
 const reminderTypeIcons: Record<Reminder['type'], string> = {
@@ -20,7 +18,7 @@ const reminderTypeIcons: Record<Reminder['type'], string> = {
   'OTHER': '📌'
 };
 
-export default function ReminderItem({ reminder, jobId, contactId }: ReminderItemProps) {
+export default function ReminderItem({ reminder }: ReminderItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const updateReminderMutation = useUpdateReminder();
   const deleteReminderMutation = useDeleteReminder();

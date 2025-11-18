@@ -35,9 +35,9 @@ export default function DashboardPage() {
       ]);
       setJobs(jobsData);
       setContacts(contactsData);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to load dashboard data:', err);
-      setError(err.message || 'Failed to load dashboard data');
+      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
     } finally {
       setLoading(false);
     }

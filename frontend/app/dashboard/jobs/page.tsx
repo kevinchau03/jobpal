@@ -29,8 +29,8 @@ export default function JobsPage() {
 
     try {
       await deleteJobMutation.mutateAsync(jobId);
-    } catch (e: any) {
-      alert(e.message || "Failed to delete job");
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : "Failed to delete job");
     }
   };
 
@@ -130,6 +130,7 @@ export default function JobsPage() {
 
       {editingJob && (
         <EditJob
+          key={editingJob.id}
           isOpen={!!editingJob}
           onClose={() => setEditingJob(null)}
           job={editingJob}

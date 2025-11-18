@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, Clock, AlertTriangle, CheckCircle, Plus, Briefcase, Users } from "lucide-react";
+import { Calendar, Clock, AlertTriangle, CheckCircle, Briefcase, Users } from "lucide-react";
 import { useReminders } from "@/hooks/useReminders";
 import ReminderItem from "../../components/ReminderItem";
 
@@ -46,7 +46,6 @@ export default function UpcomingReminders() {
   // Organize reminders by jobs vs contacts
   const jobReminders = allReminders.filter(r => r.job);
   const contactReminders = allReminders.filter(r => r.contact);
-  const unassignedReminders = allReminders.filter(r => !r.job && !r.contact);
   
   // Get current reminders based on active tab
   const getCurrentReminders = () => {

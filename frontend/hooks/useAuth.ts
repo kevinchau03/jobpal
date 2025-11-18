@@ -23,39 +23,41 @@ export function useAuth(): AuthState {
   });
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    const performAuthCheck = async () => {
+      try {
+        // Check if there's a token in localStorage (fallback)
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setAuthState({
+            user: null,
+            isLoading: false,
+            isAuthenticated: false,
+          });
+          return;
+        }
 
-  const checkAuth = async () => {
-    try {
-      // Check if there's a token in localStorage (fallback)
-      const token = localStorage.getItem('token');
-      if (!token) {
+        // Verify with backend (cookie-based auth is primary)
+        const user = await api<User>('/api/users/me');
+        setAuthState({
+          user,
+          isLoading: false,
+          isAuthenticated: true,
+        });
+      } catch (error) {
+        // If API call fails, user is not authenticated
+        console.error('Authentication check failed:', error);
+        localStorage.removeItem('token'); // Clean up invalid token
         setAuthState({
           user: null,
           isLoading: false,
           isAuthenticated: false,
         });
-        return;
       }
+    };
 
-      // Verify with backend (cookie-based auth is primary)
-      const user = await api<User>('/api/users/me');
-      setAuthState({
-        user,
-        isLoading: false,
-        isAuthenticated: true,
-      });
-    } catch (error) {
-      // If API call fails, user is not authenticated
-      localStorage.removeItem('token'); // Clean up invalid token
-      setAuthState({
-        user: null,
-        isLoading: false,
-        isAuthenticated: false,
-      });
-    }
-  };
+    performAuthCheck();
+  }, []);
+
 
   return authState;
 }

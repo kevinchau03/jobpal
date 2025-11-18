@@ -54,6 +54,13 @@ export interface CreateContactData {
   status?: Contact['status'];
 }
 
+// Filter types for contact queries
+export interface ContactFilters {
+  limit?: number;
+  cursor?: string;
+  status?: string;
+}
+
 export interface CreateReminderData {
   title: string;
   description?: string;
@@ -65,7 +72,7 @@ export interface CreateReminderData {
 export const contactKeys = {
   all: ['contacts'] as const,
   lists: () => [...contactKeys.all, 'list'] as const,
-  list: (filters: Record<string, any>) => [...contactKeys.lists(), { filters }] as const,
+  list: (filters: ContactFilters) => [...contactKeys.lists(), { filters }] as const,
   details: () => [...contactKeys.all, 'detail'] as const,
   detail: (id: string) => [...contactKeys.details(), id] as const,
   summary: () => [...contactKeys.all, 'summary'] as const,
@@ -75,7 +82,7 @@ export const contactKeys = {
 };
 
 // Hooks
-export const useContacts = (params?: { limit?: number; cursor?: string; status?: string }) => {
+export const useContacts = (params?: ContactFilters) => {
   const queryParams = new URLSearchParams();
   if (params?.limit) queryParams.set('limit', params.limit.toString());
   if (params?.cursor) queryParams.set('cursor', params.cursor);
@@ -229,7 +236,6 @@ export const useUpdateReminder = () => {
     mutationFn: ({ 
       reminderId, 
       data,
-      contactId
     }: { 
       reminderId: string; 
       data: Partial<CreateReminderData & { status: Reminder['status']; jobId?: string; contactId?: string }>;
@@ -257,7 +263,7 @@ export const useDeleteReminder = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ reminderId, contactId }: { reminderId: string; contactId?: string }) =>
+    mutationFn: ({ reminderId }: { reminderId: string; contactId?: string }) =>
       api(`/api/reminders/${reminderId}`, { method: 'DELETE' }),
     onSuccess: (_, { contactId }) => {
       // Invalidate reminder-related queries

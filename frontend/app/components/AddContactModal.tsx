@@ -94,8 +94,8 @@ export default function AddContactModal({ isOpen, onClose }: Props) {
 
             resetForm();
             onClose();
-        } catch (e: any) {
-            setError(e.message || "Could not save contact");
+        } catch (e: unknown) {
+            setError(e instanceof Error ? e.message : "Could not save contact");
         }
     }
 
@@ -232,7 +232,7 @@ export default function AddContactModal({ isOpen, onClose }: Props) {
                         <select
                             id="contact-status"
                             value={status}
-                            onChange={(e) => setStatus(e.target.value as any)}
+                            onChange={(e) => setStatus(e.target.value as CreateContactData["status"])}
                             className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card"
                         >
                             <option value="REACHED_OUT">Reached Out</option>

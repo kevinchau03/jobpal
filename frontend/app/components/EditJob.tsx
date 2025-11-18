@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
 import {
     useUpdateJob,
@@ -10,27 +10,14 @@ import {
 
 export default function EditJob({ isOpen, onClose, job }: { isOpen: boolean; onClose: () => void; job: Job }) {
     const [editForm, setEditForm] = useState({
-        title: "",
-        company: "",
-        status: "SAVED" as Job["status"],
-        location: "",
-        jobType: null as Job["jobType"]
+        title: job.title || "",
+        company: job.company || "",
+        status: job.status || "SAVED" as Job["status"],
+        location: job.location || "",
+        jobType: job.jobType || null as Job["jobType"]
     });
 
     const updateJobMutation = useUpdateJob();
-
-    // Update form when job prop changes
-    useEffect(() => {
-        if (job) {
-            setEditForm({
-                title: job.title || "",
-                company: job.company || "",
-                status: job.status || "SAVED",
-                location: job.location || "",
-                jobType: job.jobType || null
-            });
-        }
-    }, [job]);
 
     const handleUpdateJob = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -52,8 +39,8 @@ export default function EditJob({ isOpen, onClose, job }: { isOpen: boolean; onC
                 },
             });
             onClose(); // Close the modal after successful update
-        } catch (e: any) {
-            alert(e.message || "Failed to update job");
+        } catch (e: unknown) {
+            alert(e instanceof Error ? e.message : "Failed to update job");
         }
     };
 

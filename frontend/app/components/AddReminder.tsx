@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Clock, Calendar, Bell } from "lucide-react";
+import { X, Bell } from "lucide-react";
 import {
   useCreateReminder,
   CreateReminderData,
@@ -189,7 +189,7 @@ export default function AddReminder({ isOpen, onClose, job, contact }: AddRemind
     }
   };
 
-  const useTemplate = (template: Partial<CreateReminderData>) => {
+  const applyTemplate = (template: Partial<CreateReminderData>) => {
     setReminderForm(prev => ({
       ...prev,
       ...template
@@ -242,7 +242,7 @@ export default function AddReminder({ isOpen, onClose, job, contact }: AddRemind
                 {templates.map((template, index) => (
                   <button
                     key={index}
-                    onClick={() => useTemplate(template)}
+                    onClick={() => applyTemplate(template)}
                     className="w-full text-left p-3 border border-blue-200 rounded-lg transition-colors hover:cursor-pointer"
                   >
                     <div className="font-medium text-sm">{template.title}</div>

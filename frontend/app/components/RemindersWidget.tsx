@@ -68,7 +68,7 @@ export default function RemindersWidget() {
           <div className="text-center  py-6">
             <Clock className="w-8 h-8 mx-auto mb-2 " />
             <p className="text-sm">No upcoming reminders</p>
-            <p className="text-xs ">You're all caught up!</p>
+            <p className="text-xs ">You&apos;re all caught up!</p>
           </div>
         ) : (
           <div className="space-y-3">

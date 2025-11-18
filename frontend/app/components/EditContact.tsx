@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
 import {
     useUpdateContact,
@@ -10,29 +10,15 @@ import {
 
 export default function EditContact({ isOpen, onClose, contact }: { readonly isOpen: boolean; readonly onClose: () => void; readonly contact: Contact }) {
     const [editForm, setEditForm] = useState({
-        name: "",
-        company: "",
-        email: "",
-        phone: "",
-        linkedin: "",
-        status: "REACHED_OUT" as Contact["status"]
+        name: contact.name || "",
+        company: contact.company || "",
+        email: contact.email || "",
+        phone: contact.phone || "",
+        linkedin: contact.linkedin || "",
+        status: contact.status || "REACHED_OUT" as Contact["status"]
     });
 
     const updateContactMutation = useUpdateContact();
-
-    // Update form when contact prop changes
-    useEffect(() => {
-        if (contact) {
-            setEditForm({
-                name: contact.name || "",
-                company: contact.company || "",
-                email: contact.email || "",
-                phone: contact.phone || "",
-                linkedin: contact.linkedin || "",
-                status: contact.status || "REACHED_OUT"
-            });
-        }
-    }, [contact]);
 
     const handleUpdateContact = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -59,8 +45,8 @@ export default function EditContact({ isOpen, onClose, contact }: { readonly isO
                 },
             });
             onClose(); // Close the modal after successful update
-        } catch (e: any) {
-            alert(e.message || "Failed to update contact");
+        } catch (e: unknown) {
+            alert(e instanceof Error ? e.message : "Failed to update contact");
         }
     };
 
@@ -178,7 +164,7 @@ export default function EditContact({ isOpen, onClose, contact }: { readonly isO
                         <select
                             id="edit-status"
                             value={editForm.status}
-                            onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value as any }))}
+                            onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value as Contact["status"] }))}
                             className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card"
                         >
                             <option value="REACHED_OUT">Reached Out</option>
