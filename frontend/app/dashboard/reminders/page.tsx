@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, Clock, AlertTriangle, CheckCircle, Plus } from "lucide-react";
-import { useUpcomingReminders } from "@/hooks/useJobs";
+import { Calendar, Clock, AlertTriangle, CheckCircle, Plus, Briefcase, Users } from "lucide-react";
+import { useReminders } from "@/hooks/useReminders";
 import ReminderItem from "../../components/ReminderItem";
 
 export default function UpcomingReminders() {
   const [showCompleted, setShowCompleted] = useState(false);
+  const [activeTab, setActiveTab] = useState<'all' | 'jobs' | 'contacts'>('all');
   
-  // Get upcoming reminders for the next 7 days
-  const { data: upcomingReminders, isLoading, error } = useUpcomingReminders({
-    limit: 50,
-    days: 7
+  const { data: reminderData, isLoading, error } = useReminders({
+    limit: 100,
   });
 
   if (isLoading) {
@@ -42,9 +41,28 @@ export default function UpcomingReminders() {
     );
   }
 
-  const reminders = upcomingReminders || [];
-  const pendingReminders = reminders.filter(r => r.status === 'PENDING');
-  const completedReminders = reminders.filter(r => r.status === 'COMPLETED');
+  const allReminders = reminderData?.items || [];
+  
+  // Organize reminders by jobs vs contacts
+  const jobReminders = allReminders.filter(r => r.job);
+  const contactReminders = allReminders.filter(r => r.contact);
+  const unassignedReminders = allReminders.filter(r => !r.job && !r.contact);
+  
+  // Get current reminders based on active tab
+  const getCurrentReminders = () => {
+    switch (activeTab) {
+      case 'jobs':
+        return jobReminders;
+      case 'contacts':
+        return contactReminders;
+      default:
+        return allReminders;
+    }
+  };
+
+  const currentReminders = getCurrentReminders();
+  const pendingReminders = currentReminders.filter(r => r.status === 'PENDING');
+  const completedReminders = currentReminders.filter(r => r.status === 'COMPLETED');
   const overdueReminders = pendingReminders.filter(r => new Date(r.dueDate) < new Date());
   const todayReminders = pendingReminders.filter(r => 
     new Date(r.dueDate).toDateString() === new Date().toDateString()
@@ -55,9 +73,47 @@ export default function UpcomingReminders() {
       <div className="space-y-8">
         
         {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-4xl text-foreground">Reminders</h1>
-          <p className=" text-sm">Next 7 days</p>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <h1 className="text-4xl text-foreground">Reminders</h1>
+            <p className="text-sm">Manage your job and contact reminders</p>
+          </div>
+          
+          {/* Tab Navigation */}
+          <div className="flex items-center gap-1 p-1 bg-muted rounded-lg w-fit">
+            <button
+              onClick={() => setActiveTab('all')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                activeTab === 'all' 
+                  ? 'bg-background text-foreground shadow-sm' 
+                  : 'text-foreground/60 hover:text-foreground'
+              }`}
+            >
+              All ({allReminders.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('jobs')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-2 ${
+                activeTab === 'jobs' 
+                  ? 'bg-background text-foreground shadow-sm' 
+                  : 'text-foreground/60 hover:text-foreground'
+              }`}
+            >
+              <Briefcase className="w-4 h-4" />
+              Jobs ({jobReminders.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('contacts')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-2 ${
+                activeTab === 'contacts' 
+                  ? 'bg-background text-foreground shadow-sm' 
+                  : 'text-foreground/60 hover:text-foreground'
+              }`}
+            >
+              <Users className="w-4 h-4" />
+              Contacts ({contactReminders.length})
+            </button>
+          </div>
         </div>
         
         {/* Stats Grid */}
@@ -99,16 +155,35 @@ export default function UpcomingReminders() {
 
         {/* Reminders List */}
         <div className="space-y-6">
-          {pendingReminders.length === 0 && completedReminders.length === 0 ? (
+          {currentReminders.length === 0 ? (
             <div className="py-16 text-center">
               <Clock className="w-16 h-16 text-foreground/10 mx-auto mb-4" />
-              <h3 className="text-lg font-light text-foreground/80 mb-2">No upcoming reminders</h3>
-              <p className="text-sm  max-w-md mx-auto">
-                You're all caught up! Consider adding reminders to your active job applications.
+              <h3 className="text-lg font-light text-foreground/80 mb-2">
+                No {activeTab === 'all' ? '' : activeTab} reminders
+              </h3>
+              <p className="text-sm max-w-md mx-auto">
+                {activeTab === 'all' 
+                  ? "You're all caught up! Consider adding reminders to your active job applications."
+                  : `You don't have any ${activeTab} reminders yet.`
+                }
               </p>
             </div>
           ) : (
             <>
+              {/* Show breakdown by type when viewing all */}
+              {activeTab === 'all' && (jobReminders.length > 0 || contactReminders.length > 0) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm font-medium">{jobReminders.length} Job Reminders</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-green-500" />
+                    <span className="text-sm font-medium">{contactReminders.length} Contact Reminders</span>
+                  </div>
+                </div>
+              )}
+              
               {/* Overdue */}
               {overdueReminders.length > 0 && (
                 <div className="space-y-3">
@@ -120,13 +195,25 @@ export default function UpcomingReminders() {
                   </div>
                   <div className="space-y-2">
                     {overdueReminders.map((reminder) => (
-                      <div key={reminder.id} className="space-y-1">
-                        <div className="text-xs px-4">
-                          {reminder.title}
-                        </div>
+                      <div key={reminder.id} className="space-y-2">
+                        {activeTab === 'all' && (
+                          <div className="flex items-center gap-2 text-xs text-foreground/60">
+                            {reminder.job && (
+                              <>
+                                <Briefcase className="w-3 h-3" />
+                                <span>{reminder.job.title} at {reminder.job.company}</span>
+                              </>
+                            )}
+                            {reminder.contact && (
+                              <>
+                                <Users className="w-3 h-3" />
+                                <span>{reminder.contact.name} at {reminder.contact.company}</span>
+                              </>
+                            )}
+                          </div>
+                        )}
                         <ReminderItem 
                           reminder={reminder}
-                          jobId={reminder.id}
                         />
                       </div>
                     ))}
@@ -145,13 +232,25 @@ export default function UpcomingReminders() {
                   </div>
                   <div className="space-y-2">
                     {todayReminders.map((reminder) => (
-                      <div key={reminder.id} className="space-y-1">
-                        <div className="text-xs px-4">
-                          {reminder.title}
-                        </div>
+                      <div key={reminder.id} className="space-y-2">
+                        {activeTab === 'all' && (
+                          <div className="flex items-center gap-2 text-xs text-foreground/60">
+                            {reminder.job && (
+                              <>
+                                <Briefcase className="w-3 h-3" />
+                                <span>{reminder.job.title} at {reminder.job.company}</span>
+                              </>
+                            )}
+                            {reminder.contact && (
+                              <>
+                                <Users className="w-3 h-3" />
+                                <span>{reminder.contact.name} at {reminder.contact.company}</span>
+                              </>
+                            )}
+                          </div>
+                        )}
                         <ReminderItem 
                           reminder={reminder}
-                          jobId={reminder.id}
                         />
                       </div>
                     ))}
@@ -172,13 +271,25 @@ export default function UpcomingReminders() {
                     {pendingReminders
                       .filter(r => !overdueReminders.includes(r) && !todayReminders.includes(r))
                       .map((reminder) => (
-                        <div key={reminder.id} className="space-y-1">
-                          <div className="text-xs px-4">
-                            {reminder.title}
-                          </div>
+                        <div key={reminder.id} className="space-y-2">
+                          {activeTab === 'all' && (
+                            <div className="flex items-center gap-2 text-xs text-foreground/60">
+                              {reminder.job && (
+                                <>
+                                  <Briefcase className="w-3 h-3" />
+                                  <span>{reminder.job.title} at {reminder.job.company}</span>
+                                </>
+                              )}
+                              {reminder.contact && (
+                                <>
+                                  <Users className="w-3 h-3" />
+                                  <span>{reminder.contact.name} at {reminder.contact.company}</span>
+                                </>
+                              )}
+                            </div>
+                          )}
                           <ReminderItem 
                             reminder={reminder}
-                            jobId={reminder.id}
                           />
                         </div>
                       ))
@@ -198,13 +309,25 @@ export default function UpcomingReminders() {
                   </div>
                   <div className="space-y-2">
                     {completedReminders.map((reminder) => (
-                      <div key={reminder.id} className="space-y-1">
-                        <div className="text-xs px-4">
-                          {reminder.title}
-                        </div>
+                      <div key={reminder.id} className="space-y-2">
+                        {activeTab === 'all' && (
+                          <div className="flex items-center gap-2 text-xs text-foreground/60">
+                            {reminder.job && (
+                              <>
+                                <Briefcase className="w-3 h-3" />
+                                <span>{reminder.job.title} at {reminder.job.company}</span>
+                              </>
+                            )}
+                            {reminder.contact && (
+                              <>
+                                <Users className="w-3 h-3" />
+                                <span>{reminder.contact.name} at {reminder.contact.company}</span>
+                              </>
+                            )}
+                          </div>
+                        )}
                         <ReminderItem 
                           reminder={reminder}
-                          jobId={reminder.id}
                         />
                       </div>
                     ))}

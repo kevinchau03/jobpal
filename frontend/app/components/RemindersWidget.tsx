@@ -1,7 +1,7 @@
 "use client";
 
-import { Bell, Clock, AlertTriangle, ChevronRight } from "lucide-react";
-import { useUpcomingReminders } from "@/hooks/useJobs";
+import { Bell, Clock } from "lucide-react";
+import { useUpcomingReminders } from "@/hooks/useReminders";
 import Link from "next/link";
 
 export default function RemindersWidget() {
