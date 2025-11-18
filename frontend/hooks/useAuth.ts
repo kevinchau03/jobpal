@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 
 interface User {
   id: string;
@@ -25,39 +27,56 @@ interface InternalAuthState {
 export function useAuth(): AuthState {
   const [authState, setAuthState] = useState<InternalAuthState>({
     user: null,
-    isLoading: true,
+    isLoading: true, // start true while first check runs
     isAuthenticated: false,
   });
 
-  const performAuthCheck = async () => {
-    setAuthState(prev => ({ ...prev, isLoading: true }));
+  const requestIdRef = useRef(0);
+
+  const performAuthCheck = useCallback(async () => {
+    const requestId = ++requestIdRef.current;
+
+    setAuthState(prev => ({
+      ...prev,
+      isLoading: true,
+    }));
+
     try {
-      // Always try the API call first (cookie-based auth is primary)
-      const user = await api<User>('/api/users/me');
+      // Primary: cookie-based auth via /api/users/me
+      const user = await api<User>("/api/users/me");
+
+      // Ignore if a newer request has already completed
+      if (requestId !== requestIdRef.current) return;
+
       setAuthState({
         user,
         isLoading: false,
         isAuthenticated: true,
       });
     } catch (error) {
-      // If API call fails, check localStorage token as fallback
-      console.error('Authentication check failed:', error);
-      const token = localStorage.getItem('token');
-      if (token) {
-        // Token exists but API call failed - token might be invalid
-        localStorage.removeItem('token');
+      console.error("Authentication check failed:", error);
+
+      // Fallback: clean up any stale token in localStorage
+      if (typeof window !== "undefined") {
+        const token = localStorage.getItem("token");
+        if (token) {
+          localStorage.removeItem("token");
+        }
       }
+
+      if (requestId !== requestIdRef.current) return;
+
       setAuthState({
         user: null,
         isLoading: false,
         isAuthenticated: false,
       });
     }
-  };
+  }, []);
 
   useEffect(() => {
-    performAuthCheck();
-  }, []);
+    void performAuthCheck();
+  }, [performAuthCheck]);
 
   return {
     ...authState,
@@ -66,17 +85,14 @@ export function useAuth(): AuthState {
 }
 
 // Hook for redirecting authenticated users away from auth pages
-export function useAuthRedirect(redirectTo: string = '/dashboard') {
+// e.g. useAuthRedirect("/dashboard") on /login and /signup
+export function useAuthRedirect(redirectTo: string = "/dashboard") {
   const { isAuthenticated, isLoading, refetch } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    // Add a small delay to ensure auth state is stable
     if (!isLoading && isAuthenticated) {
-      const timeoutId = setTimeout(() => {
-        router.push(redirectTo);
-      }, 100);
-      return () => clearTimeout(timeoutId);
+      router.push(redirectTo);
     }
   }, [isAuthenticated, isLoading, router, redirectTo]);
 
@@ -84,17 +100,14 @@ export function useAuthRedirect(redirectTo: string = '/dashboard') {
 }
 
 // Hook for protecting routes that require authentication
-export function useRequireAuth(redirectTo: string = '/login') {
+// e.g. useRequireAuth("/login") on /dashboard pages
+export function useRequireAuth(redirectTo: string = "/login") {
   const { isAuthenticated, isLoading, user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    // Add a small delay to ensure auth state is stable
     if (!isLoading && !isAuthenticated) {
-      const timeoutId = setTimeout(() => {
-        router.push(redirectTo);
-      }, 100);
-      return () => clearTimeout(timeoutId);
+      router.push(redirectTo);
     }
   }, [isAuthenticated, isLoading, router, redirectTo]);
 
