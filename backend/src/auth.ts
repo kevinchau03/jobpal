@@ -15,7 +15,12 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     }
   }
 
-  if (!token) return res.status(401).json({ message: "Missing token" });
+  if (!token) {
+    console.log('requireAuth - no token found');
+    return res.status(401).json({ message: "Missing token" });
+  }
+
+  console.log('requireAuth - token found, verifying...');
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET as string);

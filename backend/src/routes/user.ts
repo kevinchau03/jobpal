@@ -207,13 +207,26 @@ userRouter.post("/logout", (_req, res) => {
 });
 
 userRouter.get("/me", requireAuth, async (req, res) => {
-  const { sub: userId } = (req as any).user as { sub: string };
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true, email: true, name: true, role: true, createdAt: true, exp: true },
-  });
-  if (!user) return res.status(404).json({ message: "User not found" });
-  res.json(user);
+  try {
+    const { sub: userId } = (req as any).user as { sub: string };
+    console.log('GET /me - authenticated user ID:', userId);
+    
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, name: true, role: true, createdAt: true, exp: true },
+    });
+    
+    if (!user) {
+      console.log('GET /me - user not found in database:', userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    console.log('GET /me - returning user:', user.email);
+    res.json(user);
+  } catch (error) {
+    console.error('GET /me - error:', error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 userRouter.get("/", async (req: any, res) => {
