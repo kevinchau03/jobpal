@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import Sidebar from "../components/Sidebar";
 import { cookies } from "next/headers";
 import { api } from '@/lib/api';
+import { AuthProvider } from '@/providers/AuthProvider';
 
 interface User {
   id: string;
@@ -39,9 +40,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <div className="flex h-screen">
-      <Sidebar userName={user?.name} exp={user?.exp ?? 0} />
-      <div className="flex-1 overflow-auto">{children}</div>
-    </div>
+    <AuthProvider user={user}>
+      <div className="flex h-screen">
+        <Sidebar userName={user?.name} exp={user?.exp ?? 0} />
+        <div className="flex-1 overflow-auto">{children}</div>
+      </div>
+    </AuthProvider>
   );
 }
