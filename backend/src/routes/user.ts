@@ -185,6 +185,8 @@ userRouter.post("/login", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
+    console.log(`User ${user.email} logged in`);
+
     return res.json({
       token,
       user: { id: user.id, email: user.email, name: user.name, role: user.role },

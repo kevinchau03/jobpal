@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useAuthRedirect } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 
 function VerificationContent() {
@@ -15,27 +14,12 @@ function VerificationContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    // Redirect to dashboard if already logged in
-    const { isLoading: authLoading, isAuthenticated } = useAuthRedirect('/dashboard');
-
     useEffect(() => {
         const emailParam = searchParams.get('email');
         if (emailParam) {
             setEmail(emailParam);
         }
     }, [searchParams]);
-
-    // Show loading spinner while checking auth status
-    if (authLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-2 text-gray-600">Checking authentication...</p>
-                </div>
-            </div>
-        );
-    }
 
     const handleVerification = async (e: React.FormEvent) => {
         e.preventDefault();
