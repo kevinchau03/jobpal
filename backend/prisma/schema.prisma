@@ -59,7 +59,7 @@ enum REMINDER_STATUS {
 model User {
   id        String    @id @default(cuid())
   email     String    @unique
-  password  String?
+  password  String
   name      String?
   exp       Int?       @default(0)
   createdAt DateTime  @default(now())

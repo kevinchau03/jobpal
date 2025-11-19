@@ -42,7 +42,7 @@ userRouter.post("/signup", async (req, res) => {
 
     const emailSent = await sendVerificationEmail(email, verificationCode, name);
     if (!emailSent) {
-      console.log("Failed to send verification email to", email);
+      console.log("Failed to send verification email");
       return res.status(500).json({ message: "Failed to send verification email" });
     }
 
@@ -185,7 +185,7 @@ userRouter.post("/login", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    console.log(`User ${user.email} logged in`);
+    console.log(`User logged in successfully`);
 
     return res.json({
       token,
@@ -197,7 +197,7 @@ userRouter.post("/login", async (req, res) => {
   }
 });
 
-userRouter.post("/logout", (_req, res) => {
+userRouter.post("/logout", requireAuth, (_req, res) => {
   res.clearCookie(COOKIE_NAME, {
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     secure: process.env.NODE_ENV === "production",
@@ -209,7 +209,6 @@ userRouter.post("/logout", (_req, res) => {
 userRouter.get("/me", requireAuth, async (req, res) => {
   try {
     const { sub: userId } = (req as any).user as { sub: string };
-    console.log('GET /me - authenticated user ID:', userId);
     
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -217,20 +216,13 @@ userRouter.get("/me", requireAuth, async (req, res) => {
     });
     
     if (!user) {
-      console.log('GET /me - user not found in database:', userId);
       return res.status(404).json({ message: "User not found" });
     }
     
-    console.log('GET /me - returning user:', user.email);
     res.json(user);
   } catch (error) {
     console.error('GET /me - error:', error);
     res.status(500).json({ message: "Internal server error" });
   }
-});
-
-userRouter.get("/", async (req: any, res) => {
-  const users = await prisma.user.findMany();
-  res.json(users);
 });
 
