@@ -1,8 +1,9 @@
-"use server";
-import { redirect } from 'next/navigation';
+"use client";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Sidebar from "../components/Sidebar";
-import { cookies } from "next/headers";
 import { AuthProvider } from '@/providers/AuthProvider';
+import { api } from '@/lib/api';
 
 interface User {
   id: string;
@@ -12,43 +13,42 @@ interface User {
   exp: number;
 }
 
-async function getMe() {
-  const cookieStore = await cookies();
-  const jidCookie = cookieStore.get('jid'); // Get the specific auth cookie
-  
-  if (!jidCookie) {
-    console.log('[Auth] No jid cookie found');
-    return null;
-  }
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/me`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': `jid=${jidCookie.value}`, // Send the auth cookie explicitly
-      },
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      console.log('[Auth] Request failed with status:', response.status);
-      return null;
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        console.log('[Client Auth] Checking authentication...');
+        const userData = await api<User>('/api/users/me');
+        console.log('[Client Auth] Success:', userData.email);
+        setUser(userData);
+      } catch (error) {
+        console.log('[Client Auth] Failed, redirecting to login');
+        router.push('/login');
+      } finally {
+        setLoading(false);
+      }
     }
 
-    const user = await response.json() as User;
-    return user;
-  } catch (error) {
-    console.error('[Auth] Failed to fetch user:', error);
-    return null;
+    checkAuth();
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-2 text-gray-600">Checking authentication...</p>
+        </div>
+      </div>
+    );
   }
-}
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const user = await getMe();
-
-  // Redirect to login if not authenticated
   if (!user) {
-    redirect('/login');
+    return null; // Will redirect in useEffect
   }
 
   return (
