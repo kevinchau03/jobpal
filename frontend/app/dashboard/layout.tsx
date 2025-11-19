@@ -14,26 +14,31 @@ interface User {
 
 async function getMe() {
   const cookieStore = await cookies();
-  const cookieHeader = cookieStore.getAll().map(cookie => `${cookie.name}=${cookie.value}`).join('; ');
+  const jidCookie = cookieStore.get('jid'); // Get the specific auth cookie
   
+  if (!jidCookie) {
+    console.log('[Auth] No jid cookie found');
+    return null;
+  }
+
   try {
-    
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/me`, {
       headers: {
         'Content-Type': 'application/json',
-        cookie: cookieHeader,
+        'Cookie': `jid=${jidCookie.value}`, // Send the auth cookie explicitly
       },
       cache: "no-store",
     });
 
     if (!response.ok) {
+      console.log('[Auth] Request failed with status:', response.status);
       return null;
     }
 
     const user = await response.json() as User;
     return user;
   } catch (error) {
-    console.error('Failed to fetch user:', error);
+    console.error('[Auth] Failed to fetch user:', error);
     return null;
   }
 }
